@@ -24,6 +24,8 @@ public:
     UI_Control* initialFocus() const { return m_initialFocus; }
     /// The currently focused element of the menu.
     UI_Control* currentFocus() const { return m_currentFocus; }
+    /// Moves the focus to the given control.
+    void focusControl(UI_Control* control);
 
     void SetCancelCode(MenuCodeEnum code) {
         cancelCode = code;

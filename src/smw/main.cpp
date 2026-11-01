@@ -148,6 +148,20 @@ Java_org_supermariowar_app_GameActivity_nativeIsGameplay(JNIEnv*, jobject)
     return game_values.appstate == AppState::Game ? JNI_TRUE : JNI_FALSE;
 }
 
+// Handheld/Bluetooth controller input, already assigned to a player by the activity.
+// Called on the UI thread; only queues an SDL event for the game thread.
+extern "C" JNIEXPORT void JNICALL
+Java_org_supermariowar_app_GameActivity_nativePadButton(JNIEnv*, jclass, jint player, jint button, jboolean down)
+{
+    CPlayerInput::PushPadEvent((short)player, (short)button, down == JNI_TRUE);
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_org_supermariowar_app_GameActivity_nativePadDetach(JNIEnv*, jclass, jint player)
+{
+    CPlayerInput::PushPadEvent((short)player, PAD_DETACH, false);
+}
+
 extern "C" JNIEXPORT jboolean JNICALL
 Java_org_supermariowar_app_GameActivity_nativeAllowsDpadUp(JNIEnv*, jobject)
 {
@@ -248,6 +262,8 @@ void init_joysticks()
         joysticks[i] = SDL_JoystickOpen(i);
 
     SDL_JoystickEventState(SDL_ENABLE);
+
+    CPlayerInput::RegisterPadEvents();
 }
 
 void create_gamemodes()

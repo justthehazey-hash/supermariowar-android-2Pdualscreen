@@ -561,6 +561,8 @@ void MenuState::update()
         if (MENU_CODE_EXIT_APPLICATION == code) {
             Exit();
             return;
+        } else if (MENU_CODE_FOCUS_EXIT_BUTTON == code) {
+            mMainMenu->focusExitButton();
         } else if (MENU_CODE_TO_MAIN_MENU == code) {
             iDisplayError = DISPLAY_ERROR_NONE;
             iDisplayErrorTimer = 0;

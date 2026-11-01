@@ -1,0 +1,39 @@
+name: Android APK
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Install NDK, platform and Ninja
+        run: |
+          yes | sdkmanager --licenses > /dev/null || true
+          sdkmanager "ndk;27.2.12479018" "platforms;android-35" "build-tools;35.0.0"
+          sudo apt-get update -qq && sudo apt-get install -y ninja-build
+
+      - name: Host tests (touch + gamepad input)
+        run: ./android/test-touch.sh
+
+      - name: Build APK
+        run: |
+          chmod +x android/build.sh android/gradlew
+          ANDROID_HOME="$ANDROID_SDK_ROOT" BUILD_JOBS=4 ./android/build.sh
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: supermariowar-android-gamepad
+          path: android/app/build/outputs/apk/debug/app-debug.apk

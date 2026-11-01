@@ -30,6 +30,8 @@ final class TouchControlsView extends View {
     private boolean twoPlayerMode;
     private boolean gameplay;
     private boolean dpadUpAllowed = true;
+    /** Players 1/2 using a physical controller: their on-screen controls are hidden. */
+    private final boolean[] padActive = new boolean[2];
 
     private float controlScale() {
         return getHeight() > getWidth() ? 1.25f : 1.0f;
@@ -105,6 +107,15 @@ final class TouchControlsView extends View {
         invalidate();
     }
 
+    /** A controller is (or stopped being) used by this player; 0-3, only 0/1 have touch controls. */
+    void setPadActive(int player, boolean active) {
+        if (player < 0 || player >= padActive.length || padActive[player] == active) return;
+        padActive[player] = active;
+        // Drop any finger resting on controls that are about to disappear.
+        if (active) releaseAll();
+        invalidate();
+    }
+
     void setInputActive(boolean active) {
         router.setEnabled(active);
         invalidate();
@@ -176,6 +187,14 @@ final class TouchControlsView extends View {
                 && action != MotionEvent.ACTION_MOVE && action != MotionEvent.ACTION_UP
                 && action != MotionEvent.ACTION_POINTER_UP) return true;
         final int changed = event.getActionIndex();
+        if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) {
+            // Touching a hidden half brings that player's on-screen controls back.
+            int half = layout2 != null && event.getY(changed) < layout2.bottom ? 1 : 0;
+            if (padActive[half]) {
+                padActive[half] = false;
+                invalidate();
+            }
+        }
         if (action == MotionEvent.ACTION_DOWN) releaseAll();
         // Pointer IDs are stable; indices change as other fingers lift.
         keys.beginBatch();
@@ -208,8 +227,8 @@ final class TouchControlsView extends View {
     @Override protected void onDraw(Canvas canvas) {
         if (layout == null) return;
         TouchLayout l = layout;
-        drawControls(canvas, l, input);
-        if (layout2 != null) {
+        if (!padActive[0]) drawControls(canvas, l, input);
+        if (layout2 != null && !padActive[1]) {
             canvas.save();
             canvas.clipRect(0, layout2.top, getWidth(), layout2.bottom);
             canvas.rotate(180, getWidth() / 2f, (layout2.top + layout2.bottom) / 2f);

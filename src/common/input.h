@@ -43,6 +43,25 @@
 
 #define KEY_NONE            -1
 
+// Physical controller buttons delivered per player by a platform layer (the Android
+// activity handles handheld/Bluetooth pads itself and sends these). They bypass the key
+// bindings and are mapped per screen in CPlayerInput::PadButton.
+#define PAD_UP      0
+#define PAD_DOWN    1
+#define PAD_LEFT    2
+#define PAD_RIGHT   3
+#define PAD_A       4
+#define PAD_B       5
+#define PAD_X       6
+#define PAD_Y       7
+#define PAD_L       8
+#define PAD_R       9
+#define PAD_START   10
+#define PAD_SELECT  11
+#define PAD_BUTTONS 12
+// user.code for a pad event: (player << 8) | button; PAD_DETACH frees the player.
+#define PAD_DETACH  0xFF
+
 
 struct CKeyState {
 	bool fDown;
@@ -109,6 +128,20 @@ class CPlayerInput
 		//Updates what commands the user is sending
 		void Update(SDL_Event event, short iGameState);
 
+		//Per-player controller input (see PAD_*). Safe to call from any thread.
+		static void RegisterPadEvents();
+		static bool PushPadEvent(short iPlayer, short iButton, bool fDown);
+		static bool IsPadEvent(const SDL_Event& event);
+		void PadButton(short iPlayer, short iButton, bool fDown, short iGameState);
+		void PadDetach(short iPlayer);
+
+		//True for players 2-4 that share the keyboard with player 1. Such players may
+		//not drive shared menus; a player with a controller attached may.
+		bool UsesSharedKeyboard(short iPlayer) const;
+
+		//Which outputControls key a controller button drives on this screen (-1: none)
+		static short PadKeyIndex(short iButton, short iGameState);
+
 		//Points to the input controls in the global inputConfiguration class
 		CInputPlayerControl * inputControls[4];
 
@@ -116,6 +149,12 @@ class CPlayerInput
 		COutputControl outputControls[4];
 
 		SDL_Keycode iPressedKey;
+
+		bool padAttached[4];
+
+	private:
+		//Key index each held controller button set when pressed (-1 when up)
+		short padHeld[4][PAD_BUTTONS];
 };
 
 #endif // INPUT_H

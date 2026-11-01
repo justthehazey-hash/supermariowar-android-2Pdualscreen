@@ -40,7 +40,7 @@ Fan project, not affiliated with Nintendo.
 - Menu-only D-pad Up; the dedicated Jump button handles jumping during matches.
 - Optional portrait two-player mode with opposing control areas.
 - Dedicated Player 2 touch controls.
-- Bluetooth controller support through SDL2.
+- Up to four controllers (AYN Odin 2 Portal built-in controls, Bluetooth/USB pads) in every menu and in matches, no setup needed. See [`docs/android-gamepad.md`](docs/android-gamepad.md).
 - Random bot skins and restore-default-controls actions.
 - Automatic map-thumbnail cache generation.
 - Renderer recovery after returning from another application.
