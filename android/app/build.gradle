@@ -8,9 +8,24 @@ android {
         applicationId 'org.supermariowar.app'
         minSdk 23
         targetSdk 35
-        versionCode 15
-        versionName '2.0.0-stage2-controllers'
+        versionCode 16
+        // Build number in the name so Settings > Apps shows which build is installed.
+        versionName '2.0.0-controllers-b16'
         ndk { abiFilters 'arm64-v8a' }
+    }
+    // One debug key for every build (CI runners otherwise make a new one each run),
+    // so each new APK installs over the previous one and keeps settings.
+    // Debug-only key with the standard debug passwords; not for store releases.
+    signingConfigs {
+        debug {
+            storeFile file('debug.keystore')
+            storePassword 'android'
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+        }
+    }
+    buildTypes {
+        debug { signingConfig signingConfigs.debug }
     }
     sourceSets.main {
         java.srcDirs += ['../deps/SDL/android-project/app/src/main/java']
