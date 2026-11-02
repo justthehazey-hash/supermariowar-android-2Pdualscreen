@@ -35,6 +35,7 @@ void CGM_Pipe_MiniGame::init()
     iBonusTimer = 0;
     iBonusType = 0;
     iBonusTeam = 0;
+    fSlowdown = false;
 }
 
 
