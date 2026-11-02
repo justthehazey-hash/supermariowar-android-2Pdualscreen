@@ -12,6 +12,14 @@ import java.io.*;
 public class MainActivity extends Activity {
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);
+        // Icon tapped while the game is already running in this task (e.g. after
+        // Home): just reveal the running game, don't start another one.
+        Intent launch = getIntent();
+        if (!isTaskRoot() && launch != null && Intent.ACTION_MAIN.equals(launch.getAction())
+                && launch.hasCategory(Intent.CATEGORY_LAUNCHER)) {
+            finish();
+            return;
+        }
         TextView status = new TextView(this);
         status.setText(getString(R.string.preparing) + "\n\n" + getString(R.string.android_port_credits));
         status.setGravity(android.view.Gravity.CENTER);

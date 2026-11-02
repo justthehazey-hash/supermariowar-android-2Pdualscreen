@@ -13,7 +13,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <!-- singleTask: there is only ever one game. Starting it again (icon tapped
+             while it runs in the background) brings the running game back instead of
+             starting a second SDL session in the same process. -->
         <activity android:name=".GameActivity" android:exported="false"
+            android:launchMode="singleTask"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode|navigation|smallestScreenSize|density" />
     </application>
 </manifest>
