@@ -181,8 +181,8 @@ void gfx_changefullscreen(bool fullscreen) {
     gfx.changeFullScreen(fullscreen);
 }
 
-short gfx_setvideofilter(short filter) {
-    return gfx.setVideoFilter(filter);
+short gfx_setvideofilter(short filter, bool native) {
+    return gfx.setVideoFilter(filter, native);
 }
 
 void gfx_flipscreen() {

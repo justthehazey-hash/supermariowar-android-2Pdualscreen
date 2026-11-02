@@ -34,6 +34,23 @@ const char* const kHalationCrt =
 #include "shaders/halation_crt.glsl.inc"
     ;
 
+// Native mode's first step: each output pixel samples halfway between two
+// rows of the frame with linear filtering, i.e. the average of the row pair.
+const char* const kDownscale = R"GLSL(
+#ifdef VERTEX
+attribute vec4 VertexCoord;
+attribute vec4 TexCoord;
+uniform mat4 MVPMatrix;
+varying vec2 uv;
+void main() { gl_Position = MVPMatrix * VertexCoord; uv = TexCoord.xy; }
+#else
+precision mediump float;
+uniform sampler2D Texture;
+varying vec2 uv;
+void main() { gl_FragColor = vec4(texture2D(Texture, uv).rgb, 1.0); }
+#endif
+)GLSL";
+
 // One pass of a RetroArch .glslp preset. Every pass but the last renders at the
 // source size (scale_type = source, scale = 1), the last one to the screen.
 struct PassDef {
@@ -183,7 +200,7 @@ CrtFilter::~CrtFilter()
     stop();
 }
 
-bool CrtFilter::start(SDL_Window* window, short filter)
+bool CrtFilter::start(SDL_Window* window, short filter, bool native)
 {
     stop();
     if (!window || !preset(filter).passes)
@@ -191,11 +208,14 @@ bool CrtFilter::start(SDL_Window* window, short filter)
 
     m_window = window;
     m_filter = filter;
+    m_native = native;
+    m_sourceW = kWidth;
+    m_sourceH = native ? kHeight / 2 : kHeight;
     if (!createContext() || !createResources()) {
         stop();
         return false;
     }
-    printf("[gfx] CRT filter %d active, %d pass(es), %s (%s)\n", filter, int(m_passes.size()),
+    printf("[gfx] CRT filter %d active at %dx%d, %d pass(es), %s (%s)\n", filter, m_sourceW, m_sourceH, int(m_passes.size()),
         reinterpret_cast<const char*>(gl.GetString(GL_VERSION)),
         reinterpret_cast<const char*>(gl.GetString(GL_RENDERER)));
     return true;
@@ -273,7 +293,7 @@ bool CrtFilter::createTarget(Pass& pass, bool srgb)
     // Prefer an sRGB target when the preset asks for one and ES 3 has it.
     for (bool useSrgb : {srgb && m_gles3, false}) {
         gl.BindTexture(GL_TEXTURE_2D, pass.texture);
-        gl.TexImage2D(GL_TEXTURE_2D, 0, useSrgb ? kSrgb8Alpha8 : GL_RGBA, kWidth, kHeight, 0,
+        gl.TexImage2D(GL_TEXTURE_2D, 0, useSrgb ? kSrgb8Alpha8 : GL_RGBA, m_sourceW, m_sourceH, 0,
             GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
         gl.BindFramebuffer(GL_FRAMEBUFFER, pass.framebuffer);
         gl.FramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pass.texture, 0);
@@ -289,6 +309,37 @@ bool CrtFilter::createTarget(Pass& pass, bool srgb)
     return false;
 }
 
+unsigned CrtFilter::link(const char* source, int index)
+{
+    const unsigned vertex = compile(source, GL_VERTEX_SHADER, "VERTEX");
+    const unsigned fragment = compile(source, GL_FRAGMENT_SHADER, "FRAGMENT");
+    if (!vertex || !fragment) {
+        if (vertex) gl.DeleteShader(vertex);
+        if (fragment) gl.DeleteShader(fragment);
+        return 0;
+    }
+    unsigned program = gl.CreateProgram();
+    gl.AttachShader(program, vertex);
+    gl.AttachShader(program, fragment);
+    gl.BindAttribLocation(program, kVertexSlot, "VertexCoord");
+    gl.BindAttribLocation(program, kTexSlot, "TexCoord");
+    gl.BindAttribLocation(program, kColorSlot, "COLOR");
+    gl.LinkProgram(program);
+    gl.DeleteShader(vertex);
+    gl.DeleteShader(fragment);
+
+    GLint linked = 0;
+    gl.GetProgramiv(program, GL_LINK_STATUS, &linked);
+    if (!linked) {
+        char log[1024] = {};
+        gl.GetProgramInfoLog(program, sizeof log, nullptr, log);
+        printf("[gfx][warning] CRT filter: pass %d link: %s\n", index, log);
+        gl.DeleteProgram(program);
+        return 0;
+    }
+    return program;
+}
+
 bool CrtFilter::createResources()
 {
     destroyResources();
@@ -298,34 +349,17 @@ bool CrtFilter::createResources()
     for (int index = 0; index < chain.count; index++) {
         Pass& pass = m_passes[index];
         const PassDef& def = chain.passes[index];
-        const unsigned vertex = compile(def.source, GL_VERTEX_SHADER, "VERTEX");
-        const unsigned fragment = compile(def.source, GL_FRAGMENT_SHADER, "FRAGMENT");
-        if (!vertex || !fragment) {
-            if (vertex) gl.DeleteShader(vertex);
-            if (fragment) gl.DeleteShader(fragment);
+        pass.program = link(def.source, index);
+        if (!pass.program)
             return false;
-        }
-        pass.program = gl.CreateProgram();
-        gl.AttachShader(pass.program, vertex);
-        gl.AttachShader(pass.program, fragment);
-        gl.BindAttribLocation(pass.program, kVertexSlot, "VertexCoord");
-        gl.BindAttribLocation(pass.program, kTexSlot, "TexCoord");
-        gl.BindAttribLocation(pass.program, kColorSlot, "COLOR");
-        gl.LinkProgram(pass.program);
-        gl.DeleteShader(vertex);
-        gl.DeleteShader(fragment);
-
-        GLint linked = 0;
-        gl.GetProgramiv(pass.program, GL_LINK_STATUS, &linked);
-        if (!linked) {
-            char log[1024] = {};
-            gl.GetProgramInfoLog(pass.program, sizeof log, nullptr, log);
-            printf("[gfx][warning] CRT filter: pass %d link: %s\n", index, log);
-            return false;
-        }
         pass.parameters = parameterDefaults(def.source);
         applyOverrides(pass.parameters);
         if (index + 1 < chain.count && !createTarget(pass, def.srgbFramebuffer))
+            return false;
+    }
+    if (m_native) {
+        m_downscale.program = link(kDownscale, -1);
+        if (!m_downscale.program || !createTarget(m_downscale, false))
             return false;
     }
 
@@ -367,6 +401,10 @@ void CrtFilter::destroyResources()
         if (pass.texture) gl.DeleteTextures(1, &pass.texture);
     }
     m_passes.clear();
+    if (m_downscale.program) gl.DeleteProgram(m_downscale.program);
+    if (m_downscale.framebuffer) gl.DeleteFramebuffers(1, &m_downscale.framebuffer);
+    if (m_downscale.texture) gl.DeleteTextures(1, &m_downscale.texture);
+    m_downscale = Pass();
     if (m_frameTexture) gl.DeleteTextures(1, &m_frameTexture);
     if (m_buffer) gl.DeleteBuffers(1, &m_buffer);
     m_frameTexture = m_buffer = 0;
@@ -393,13 +431,15 @@ bool CrtFilter::present(const SDL_Surface* frame)
         SDL_GL_DestroyContext(m_context);
         m_context = nullptr;
         m_passes.clear();
+        m_downscale = Pass();
         m_frameTexture = m_buffer = 0;
-        if (!start(window, filter))
+        if (!start(window, filter, m_native))
             return false;
     }
     // Android may drop GPU objects while the app is in the background.
     if (m_passes.empty() || !gl.IsProgram(m_passes[0].program)) {
         m_passes.clear();
+        m_downscale = Pass();
         m_frameTexture = m_buffer = 0;
         if (!createResources())
             return false;
@@ -448,6 +488,24 @@ bool CrtFilter::present(const SDL_Surface* frame)
     gl.VertexAttrib4f(kColorSlot, 1, 1, 1, 1);
     gl.VertexAttribPointer(kVertexSlot, 4, GL_FLOAT, GL_FALSE, 12 * sizeof(float), nullptr);
 
+    // What the preset reads as the game frame: the uploaded frame itself
+    // (top row first, so its quad flips V), or its native-size copy (upright).
+    unsigned source = m_frameTexture;
+    bool sourceFlipped = true;
+    if (m_native) {
+        gl.BindFramebuffer(GL_FRAMEBUFFER, m_downscale.framebuffer);
+        gl.Viewport(0, 0, m_sourceW, m_sourceH);
+        gl.VertexAttribPointer(kTexSlot, 4, GL_FLOAT, GL_FALSE, 12 * sizeof(float),
+            reinterpret_cast<const void*>(4 * sizeof(float)));
+        gl.UseProgram(m_downscale.program);
+        gl.UniformMatrix4fv(gl.GetUniformLocation(m_downscale.program, "MVPMatrix"), 1, GL_FALSE, mvp);
+        bindInput(0, m_frameTexture, true);
+        gl.Uniform1i(gl.GetUniformLocation(m_downscale.program, "Texture"), 0);
+        gl.DrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+        source = m_downscale.texture;
+        sourceFlipped = false;
+    }
+
     const int frameCount = int(m_frameCount++);
     for (size_t index = 0; index < m_passes.size(); index++) {
         const Pass& pass = m_passes[index];
@@ -462,11 +520,11 @@ bool CrtFilter::present(const SDL_Surface* frame)
             gl.Viewport((windowW - outW) / 2, (windowH - outH) / 2, outW, outH);
         } else {
             gl.BindFramebuffer(GL_FRAMEBUFFER, pass.framebuffer);
-            gl.Viewport(0, 0, kWidth, kHeight);
+            gl.Viewport(0, 0, m_sourceW, m_sourceH);
         }
 
         // The first pass reads the game frame, later ones an upright target.
-        const size_t texOffset = (index == 0 ? 4 : 8) * sizeof(float);
+        const size_t texOffset = (index == 0 && sourceFlipped ? 4 : 8) * sizeof(float);
         gl.VertexAttribPointer(kTexSlot, 4, GL_FLOAT, GL_FALSE, 12 * sizeof(float),
             reinterpret_cast<const void*>(texOffset));
 
@@ -475,15 +533,15 @@ bool CrtFilter::present(const SDL_Surface* frame)
         gl.UniformMatrix4fv(uniform("MVPMatrix"), 1, GL_FALSE, mvp);
         gl.Uniform1i(uniform("FrameDirection"), 1);
         gl.Uniform1i(uniform("FrameCount"), frameCount);
-        gl.Uniform2f(uniform("OutputSize"), last ? float(outW) : float(kWidth), last ? float(outH) : float(kHeight));
-        gl.Uniform2f(uniform("TextureSize"), float(kWidth), float(kHeight));
-        gl.Uniform2f(uniform("InputSize"), float(kWidth), float(kHeight));
+        gl.Uniform2f(uniform("OutputSize"), last ? float(outW) : float(m_sourceW), last ? float(outH) : float(m_sourceH));
+        gl.Uniform2f(uniform("TextureSize"), float(m_sourceW), float(m_sourceH));
+        gl.Uniform2f(uniform("InputSize"), float(m_sourceW), float(m_sourceH));
         for (const auto& [name, value] : pass.parameters)
             gl.Uniform1f(uniform(name.c_str()), value);
 
         // Texture = previous pass (or the frame); PassPrevNTexture = output of
         // the pass N steps back, where one step before pass 0 is the frame.
-        auto output = [&](int pass) { return pass < 0 ? m_frameTexture : m_passes[pass].texture; };
+        auto output = [&](int pass) { return pass < 0 ? source : m_passes[pass].texture; };
         bindInput(0, output(int(index) - 1), linear);
         gl.Uniform1i(uniform("Texture"), 0);
         unsigned unit = 1;
@@ -498,7 +556,7 @@ bool CrtFilter::present(const SDL_Surface* frame)
         }
         const GLint orig = uniform("OrigTexture");
         if (orig >= 0) {
-            bindInput(unit, m_frameTexture, linear);
+            bindInput(unit, source, linear);
             gl.Uniform1i(orig, int(unit));
         }
 

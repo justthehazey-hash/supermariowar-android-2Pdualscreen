@@ -639,7 +639,7 @@ void MenuState::update()
             blitdest = screen;
         }
         else if (MENU_CODE_VIDEO_FILTER_CHANGED == code) {
-            game_values.videofilter = gfx_setvideofilter(game_values.videofilter);
+            game_values.videofilter = gfx_setvideofilter(game_values.videofilter, game_values.crtresolution == 0);
         }
         else if (MENU_CODE_TO_GAME_SETUP_MENU == code) {
             printf("MENU_CODE_TO_GAME_SETUP_MENU\n");

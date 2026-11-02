@@ -25,8 +25,12 @@ public:
     ~CrtFilter();
 
     // Create the GL context and shaders for the filter. On failure nothing is
-    // left behind and the caller keeps using its renderer.
-    bool start(SDL_Window* window, short filter);
+    // left behind and the caller keeps using its renderer. With native set,
+    // the shaders see 240 lines, the art's real line count (graphics are drawn
+    // at 2x), so each row of art gets one scanline as on a console in
+    // RetroArch; the full 640 columns are kept so the finer text stays sharp.
+    // Otherwise they see the whole 640x480 frame.
+    bool start(SDL_Window* window, short filter, bool native);
     void stop();
     bool active() const { return m_context != nullptr; }
 
@@ -47,11 +51,15 @@ private:
     void destroyResources();
     unsigned compile(const char* source, unsigned type, const char* stage);
     bool createTarget(Pass& pass, bool srgb);
+    unsigned link(const char* source, int index);
     void bindInput(unsigned unit, unsigned texture, bool linear);
 
     SDL_Window* m_window = nullptr;
     SDL_GLContext m_context = nullptr;
     short m_filter = Off;
+    bool m_native = true;
+    int m_sourceW = 0, m_sourceH = 0;  // what the preset sees as the game frame
+    Pass m_downscale;                   // 640x480 -> 640x240 when native
     bool m_gles3 = false;
 
     std::vector<Pass> m_passes;

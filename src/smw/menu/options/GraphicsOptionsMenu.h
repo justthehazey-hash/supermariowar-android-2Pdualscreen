@@ -22,6 +22,7 @@ private:
     MI_SelectField<short>* miFrameLimiterField;
     MI_SelectField<bool>* miFullscreenField;
     MI_SelectField<short>* miCrtFilterField;
+    MI_SelectField<short>* miCrtResolutionField;
 
     MI_PacksField* miMenuGraphicsPackField;
     MI_PacksField* miWorldGraphicsPackField;

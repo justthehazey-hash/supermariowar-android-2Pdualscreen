@@ -1,4 +1,5 @@
 #include "MI_SelectField.h"
+#include "ui/FieldLabel.h"
 
 #include "input.h"
 #include "RandomNumberGenerator.h"
@@ -79,7 +80,7 @@ void MI_SelectField<T>::Draw()
     }
 
     if (m_indent> 0)
-        rm->menu_font_large.drawChopRight(m_pos.x + 16, m_pos.y + 5, m_indent - 8, m_name.c_str());
+        drawFieldLabel(rm->menu_font_large, m_pos.x, m_pos.y + 5, m_indent, m_name.c_str());
 
     if (!m_items.empty()) {
         const short indent = (m_indent > 0) ? m_indent : 8;

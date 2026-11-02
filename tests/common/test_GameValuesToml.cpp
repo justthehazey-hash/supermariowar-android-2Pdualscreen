@@ -209,7 +209,7 @@ TEST_CASE("TOML config document covers every descriptor field exactly once")
     }, config::NamedLayout<CGameConfig>::sections);
 
     CHECK(counts[0] == 10);
-    CHECK(counts[1] == 66);
+    CHECK(counts[1] == 68); // + crt_filter, crt_scanlines (Android port)
     CHECK(counts[2] == 2); // gamemode_settings, gamemode_goals
 }
 

@@ -73,6 +73,13 @@ UI_GraphicsOptionsMenu::UI_GraphicsOptionsMenu()
     miCrtFilterField->setCurrentValue(game_values.videofilter);
     miCrtFilterField->setItemChangedCode(MENU_CODE_VIDEO_FILTER_CHANGED);
 
+    miCrtResolutionField = new MI_SelectField<short>(&rm->spr_selectfield, 70, 400, "CRT Scanlines", 500, 220);
+    miCrtResolutionField->add("240 (Native)", 0);
+    miCrtResolutionField->add("480", 1);
+    miCrtResolutionField->setOutputPtr(&game_values.crtresolution);
+    miCrtResolutionField->setCurrentValue(game_values.crtresolution);
+    miCrtResolutionField->setItemChangedCode(MENU_CODE_VIDEO_FILTER_CHANGED);
+
     miMenuGraphicsPackField = new MI_PacksField(&rm->spr_selectfield, 70, 240, "Menu Graphics", 500, 220, menugraphicspacklist, MENU_CODE_MENU_GRAPHICS_PACK_CHANGED);
     miWorldGraphicsPackField = new MI_PacksField(&rm->spr_selectfield, 70, 280, "World Graphics", 500, 220, worldgraphicspacklist, MENU_CODE_WORLD_GRAPHICS_PACK_CHANGED);
     miGameGraphicsPackField = new MI_PacksField(&rm->spr_selectfield, 70, 320, "Game Graphics", 500, 220, gamegraphicspacklist, MENU_CODE_GAME_GRAPHICS_PACK_CHANGED);
@@ -92,8 +99,9 @@ UI_GraphicsOptionsMenu::UI_GraphicsOptionsMenu()
 
     AddControl(miWorldGraphicsPackField, miMenuGraphicsPackField, miGameGraphicsPackField, NULL, miGraphicsOptionsMenuBackButton);
     AddControl(miGameGraphicsPackField, miWorldGraphicsPackField, miCrtFilterField, NULL, miGraphicsOptionsMenuBackButton);
-    AddControl(miCrtFilterField, miGameGraphicsPackField, miGraphicsOptionsMenuBackButton, NULL, miGraphicsOptionsMenuBackButton);
-    AddControl(miGraphicsOptionsMenuBackButton, miCrtFilterField, miTopLayerField, miCrtFilterField, NULL);
+    AddControl(miCrtFilterField, miGameGraphicsPackField, miCrtResolutionField, NULL, miGraphicsOptionsMenuBackButton);
+    AddControl(miCrtResolutionField, miCrtFilterField, miGraphicsOptionsMenuBackButton, NULL, miGraphicsOptionsMenuBackButton);
+    AddControl(miGraphicsOptionsMenuBackButton, miCrtResolutionField, miTopLayerField, miCrtResolutionField, NULL);
 
     AddNonControl(miGraphicsOptionsMenuLeftHeaderBar);
     AddNonControl(miGraphicsOptionsMenuRightHeaderBar);

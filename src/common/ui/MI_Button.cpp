@@ -1,5 +1,7 @@
 #include "MI_Button.h"
 
+#include <algorithm>
+
 #include "GameValues.h"
 #include "ResourceManager.h"
 
@@ -45,20 +47,25 @@ void MI_Button::Draw()
     const SDL_Rect srcRect {iImageSrcX, iImageSrcY, iImageW, iImageH};
 
     switch (m_text_align) {
-        case TextAlign::LEFT:
-            rm->menu_font_large.drawChopRight(m_pos.x + 16 + (iImageW > 0 ? iImageW + 2 : 0), m_pos.y + 5, iWidth - 32, szName.c_str());
+        case TextAlign::LEFT: {
+            // Start where the pipe body starts, past the 26px end cap; on a
+            // button too narrow for that, center the text instead.
+            const short iContentW = iTextW + (iImageW > 0 ? iImageW + 2 : 0);
+            const short iInset = std::max<short>(0, std::min<short>(26, (iWidth - iContentW) / 2));
+            rm->menu_font_large.drawChopRight(m_pos.x + iInset + (iImageW > 0 ? iImageW + 2 : 0), m_pos.y + 5, iWidth - 2 * iInset, szName.c_str());
             if (sprImage)
-                sprImage->draw(m_pos.x + 16, m_pos.y + 16 - (iImageH >> 1), srcRect);
+                sprImage->draw(m_pos.x + iInset, m_pos.y + 16 - (iImageH >> 1), srcRect);
             break;
+        }
         case TextAlign::CENTER:
             rm->menu_font_large.drawCentered(m_pos.x + ((iWidth + (iImageW > 0 ? iImageW + 2 : 0)) >> 1), m_pos.y + 5, szName.c_str());
             if (sprImage)
                 sprImage->draw(m_pos.x + (iWidth >> 1) - ((iTextW + iImageW) >> 1) - 1, m_pos.y + 16 - (iImageH >> 1), srcRect);
             break;
         case TextAlign::RIGHT:
-            rm->menu_font_large.drawRightJustified(m_pos.x + iWidth - 16, m_pos.y + 5, szName.c_str());
+            rm->menu_font_large.drawRightJustified(m_pos.x + iWidth - 26, m_pos.y + 5, szName.c_str());
             if (sprImage)
-                sprImage->draw(m_pos.x + iWidth - 18 - iTextW - iImageW, m_pos.y + 16 - (iImageH >> 1), srcRect);
+                sprImage->draw(m_pos.x + iWidth - 28 - iTextW - iImageW, m_pos.y + 16 - (iImageH >> 1), srcRect);
             break;
     }
 }

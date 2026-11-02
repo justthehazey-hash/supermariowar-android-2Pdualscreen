@@ -186,7 +186,7 @@ void GraphicsSDL::setTitle(const char* title) const
     SDL_SetWindowTitle(sdl_window, title);
 }
 
-short GraphicsSDL::setVideoFilter(short filter)
+short GraphicsSDL::setVideoFilter(short filter, bool native)
 {
     if (filter <= CrtFilter::Off || filter >= CrtFilter::Count) {
         if (crt.active()) {
@@ -202,7 +202,7 @@ short GraphicsSDL::setVideoFilter(short filter)
     SDL_DestroyRenderer(sdl_renderer);
     sdl_renderer = nullptr;
 
-    if (!crt.start(sdl_window, filter)) {
+    if (!crt.start(sdl_window, filter, native)) {
         recreateRenderer();
         return CrtFilter::Off;
     }

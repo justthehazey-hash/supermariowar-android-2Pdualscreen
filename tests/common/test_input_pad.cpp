@@ -130,3 +130,48 @@ TEST_CASE("Pad events travel through the SDL queue into Update")
     CHECK_FALSE(f.input.outputControls[3].menu_select.fDown);
     SDL_Quit();
 }
+
+TEST_CASE("A held direction repeats in menus, not in a match")
+{
+    Fixture f;
+    f.input.PadButton(0, PAD_DOWN, true, MENU);
+    CHECK(f.input.outputControls[0].menu_down.fPressed);
+    int presses = 0, firstRepeat = -1;
+    for (int frame = 1; frame <= 62; frame++) {  // one second at the normal frame rate
+        f.input.ClearPressedKeys(MENU);
+        if (f.input.outputControls[0].menu_down.fPressed) {
+            presses++;
+            if (firstRepeat < 0) firstRepeat = frame;
+        }
+        CHECK_FALSE(f.input.outputControls[0].menu_up.fPressed);
+    }
+    CHECK(firstRepeat >= 20);
+    CHECK(firstRepeat <= 30);
+    CHECK(presses >= 5);
+    CHECK(presses <= 8);
+
+    // Released: no more repeats, and the next hold starts the delay over.
+    f.input.PadButton(0, PAD_DOWN, false, MENU);
+    for (int frame = 0; frame < 40; frame++) {
+        f.input.ClearPressedKeys(MENU);
+        CHECK_FALSE(f.input.outputControls[0].menu_down.fPressed);
+    }
+    f.input.PadButton(0, PAD_DOWN, true, MENU);
+    f.input.ClearPressedKeys(MENU);
+    CHECK_FALSE(f.input.outputControls[0].menu_down.fPressed);
+
+    // Buttons never repeat.
+    f.input.PadButton(1, PAD_A, true, MENU);
+    for (int frame = 0; frame < 62; frame++) {
+        f.input.ClearPressedKeys(MENU);
+        CHECK_FALSE(f.input.outputControls[1].menu_select.fPressed);
+    }
+
+    // In a match a held direction is just held.
+    f.input.PadButton(2, PAD_LEFT, true, GAME);
+    for (int frame = 0; frame < 62; frame++) {
+        f.input.ClearPressedKeys(GAME);
+        CHECK_FALSE(f.input.outputControls[2].game_left.fPressed);
+        CHECK(f.input.outputControls[2].game_left.fDown);
+    }
+}

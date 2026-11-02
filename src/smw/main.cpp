@@ -436,7 +436,7 @@ void main_game()
         gfx_changefullscreen(true);
         blitdest = screen;
     }
-    game_values.videofilter = gfx_setvideofilter(game_values.videofilter);
+    game_values.videofilter = gfx_setvideofilter(game_values.videofilter, game_values.crtresolution == 0);
 
     init_spawnlocations();
 

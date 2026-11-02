@@ -38,7 +38,7 @@ bool gfx_init(int w, int h, bool fullscreen);
 void gfx_changefullscreen(bool fullscreen);
 // CRT filter: 0 = off, 1 = crt-lottes, 2 = crt-easymode, 3 = crt-easymode-halation.
 // Returns the filter in use.
-short gfx_setvideofilter(short filter);
+short gfx_setvideofilter(short filter, bool native);
 void gfx_flipscreen();
 void gfx_settitle(const char*);
 void gfx_show_catched_error(const std::string&);

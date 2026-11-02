@@ -101,6 +101,7 @@ void CPlayerInput::PadButton(short iPlayer, short iButton, bool fDown, short iGa
 
         iKey = PadKeyIndex(iButton, iGameState);
         held[iButton] = iKey;
+        padHeldFrames[iPlayer][iButton] = 0;
         if (iKey < 0)
             return;
 
@@ -159,8 +160,10 @@ CPlayerInput::CPlayerInput()
 
     for (int iPlayer = 0; iPlayer < MAX_PLAYERS; iPlayer++) {
         padAttached[iPlayer] = false;
-        for (int b = 0; b < PAD_BUTTONS; b++)
+        for (int b = 0; b < PAD_BUTTONS; b++) {
             padHeld[iPlayer][b] = -1;
+            padHeldFrames[iPlayer][b] = 0;
+        }
     }
 
     iPressedKey = 0;
@@ -174,6 +177,27 @@ void CPlayerInput::ClearPressedKeys(short iGameState)
         COutputControl* outputControl = &outputControls[iPlayer];
         for (int iKey = 0; iKey < NUM_KEYS; iKey++) {
             outputControl->keys[iKey].fPressed = false;
+        }
+    }
+
+    //Menus: a held controller direction repeats, like a held keyboard key
+    //(first repeat after ~0.4s, then ~10 per second at the normal frame rate)
+    if (iGameState == 1) {
+        const short kRepeatDelay = 18, kRepeatInterval = 6;
+        for (int iPlayer = 0; iPlayer < MAX_PLAYERS; iPlayer++) {
+            for (short b = PAD_UP; b <= PAD_RIGHT; b++) {
+                const short iKey = padHeld[iPlayer][b];
+                if (iKey < 0)
+                    continue;
+                short& frames = padHeldFrames[iPlayer][b];
+                if (frames < kRepeatDelay + kRepeatInterval)
+                    frames++;
+                if (frames >= kRepeatDelay + kRepeatInterval) {
+                    frames = kRepeatDelay;
+                    if (outputControls[iPlayer].keys[iKey].fDown)
+                        outputControls[iPlayer].keys[iKey].fPressed = true;
+                }
+            }
         }
     }
 

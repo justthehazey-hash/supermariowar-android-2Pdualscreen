@@ -13,7 +13,7 @@ public:
 
     void flipScreen();
     // 0 = off, otherwise a CrtFilter::Filter. Returns the filter now in use.
-    short setVideoFilter(short filter);
+    short setVideoFilter(short filter, bool native);
     void changeFullScreen(bool fullcreen) const;
     void setTitle(const char*) const;
     void showErrorBox(const char*) const;

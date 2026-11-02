@@ -1,4 +1,5 @@
 #include "MI_ImageSelectField.h"
+#include "ui/FieldLabel.h"
 
 #include "ResourceManager.h"
 #include "ui/MI_Image.h"
@@ -30,7 +31,7 @@ void MI_ImageSelectField::Draw()
     m_spr->draw(m_pos.x + m_indent - 16, m_pos.y, {0, (fSelected ? 96 : 64), 32, 32});
     m_spr->draw(m_pos.x + m_indent + 16, m_pos.y, {528 - m_width + m_indent, (fSelected ? 32 : 0), m_width - m_indent - 16, 32});
 
-    rm->menu_font_large.drawChopRight(m_pos.x + 16, m_pos.y + 5, m_indent - 8, m_name.c_str());
+    drawFieldLabel(rm->menu_font_large, m_pos.x, m_pos.y + 5, m_indent, m_name.c_str());
 
     if (!m_items.empty()) {
         rm->menu_font_large.drawChopRight(m_pos.x + m_indent + iImageWidth + 10, m_pos.y + 5, m_width - m_indent - 24, currentItem().name.c_str());

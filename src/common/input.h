@@ -156,6 +156,8 @@ class CPlayerInput
 	private:
 		//Key index each held controller button set when pressed (-1 when up)
 		short padHeld[4][PAD_BUTTONS];
+		//Frames each held direction has been down, for menu auto-repeat
+		short padHeldFrames[4][PAD_BUTTONS];
 };
 
 #endif // INPUT_H

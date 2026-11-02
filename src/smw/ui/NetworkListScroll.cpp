@@ -158,8 +158,8 @@ void MI_NetworkListScroll::Draw()
         spr->draw(m_pos.x + 16, m_pos.y + 32 + iLine * 32, {0, (iSelectedLine == iLine ? 32 : 0), iHalfLineWidth, 32});
         spr->draw(m_pos.x + 16 + iHalfLineWidth, m_pos.y + 32 + iLine * 32, {512 - iLineWidth + iHalfLineWidth, (iSelectedLine == iLine ? 32 : 0), iLineWidth - iHalfLineWidth, 32});
 
-        rm->menu_font_large.drawChopRight(m_pos.x + 28, m_pos.y + 5 + iLine * 32 + 32, iWidth - 104, items[iOffset + iLine].sLeft.c_str());
-        rm->menu_font_large.drawRightJustified(m_pos.x + 28 + iWidth - 64, m_pos.y + 5 + iLine * 32 + 32, items[iOffset + iLine].sRight.c_str());
+        rm->menu_font_large.drawChopRight(m_pos.x + 42, m_pos.y + 5 + iLine * 32 + 32, iWidth - 118, items[iOffset + iLine].sLeft.c_str());
+        rm->menu_font_large.drawRightJustified(m_pos.x + iWidth - 42, m_pos.y + 5 + iLine * 32 + 32, items[iOffset + iLine].sRight.c_str());
     }
 }
 

@@ -33,6 +33,8 @@ every player on **Keyboard** there. Touch controls keep working alongside contro
 - Up does nothing during a match, so a tilted stick never jumps; A is jump.
 - Every controller can drive the shared menus, ready up and continue on team select,
   pause, and use the exit dialog (B closes it).
+- Holding a direction in a menu keeps scrolling (after a short delay), with the D-pad
+  or the stick; so does changing a setting with left/right.
 - B on the main menu highlights **Exit** instead of quitting, so quitting needs a
   deliberate A on Exit.
 - Without a controller, Player 1 can use the on-screen touch controls. They hide while
@@ -61,4 +63,11 @@ Off draws exactly as before. The shaders come unmodified from libretro/glsl-shad
 (crt-lottes: public domain, Timothy Lottes; crt-easymode and crt-easymode-halation: GPL,
 EasyMode). `src/common/gfx/CrtFilter.cpp` runs them like RetroArch: multi-pass presets,
 PassPrevN inputs, `#pragma parameter` defaults as uniforms, sRGB intermediates on ES 3.
+
+**CRT Scanlines** picks how many lines the shader sees. The game's art is drawn at 2x,
+so by default (**240 (Native)**) row pairs are averaged into 240 lines first, as
+RetroArch hands a console game to these shaders: one scanline per row of art. The full
+640 columns are kept, so the menu text stays sharp. **480** feeds the whole frame
+(fine scanlines). The halation preset's interlacing switch is turned off, since the
+game is progressive.
 
