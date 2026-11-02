@@ -6,34 +6,45 @@ on:
 
 jobs:
   apk:
-    runs-on: ubuntu-latest
+    # Pinned: ubuntu-latest is moving to a new image; 24.04 ships the Android SDK.
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           submodules: recursive
 
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
 
-      - uses: android-actions/setup-android@v3
-
-      - name: Install NDK, platform and Ninja
-        run: |
-          yes | sdkmanager --licenses > /dev/null || true
-          sdkmanager "ndk;27.2.12479018" "platforms;android-35" "build-tools;35.0.0"
-          sudo apt-get update -qq && sudo apt-get install -y ninja-build
-
       - name: Host tests (touch + gamepad input)
         run: ./android/test-touch.sh
 
-      - name: Build APK
+      - name: Android SDK, NDK and Ninja
         run: |
-          chmod +x android/build.sh android/gradlew
-          ANDROID_HOME="$ANDROID_SDK_ROOT" BUILD_JOBS=4 ./android/build.sh
+          sdk="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-}}"
+          manager="$sdk/cmdline-tools/latest/bin/sdkmanager"
+          if [ -z "$sdk" ] || [ ! -x "$manager" ]; then
+            # Fallback when the runner image has no SDK preinstalled.
+            sdk="$HOME/android-sdk"
+            mkdir -p "$sdk/cmdline-tools"
+            curl -sSL -o /tmp/cmdline-tools.zip \
+              https://dl.google.com/android/repository/commandlinetools-linux-13114758_latest.zip
+            unzip -q /tmp/cmdline-tools.zip -d "$sdk/cmdline-tools"
+            mv "$sdk/cmdline-tools/cmdline-tools" "$sdk/cmdline-tools/latest"
+            manager="$sdk/cmdline-tools/latest/bin/sdkmanager"
+          fi
+          echo "ANDROID_HOME=$sdk" >> "$GITHUB_ENV"
+          echo "ANDROID_SDK_ROOT=$sdk" >> "$GITHUB_ENV"
+          yes | "$manager" --licenses > /dev/null || true
+          "$manager" "ndk;27.2.12479018" "platforms;android-35" "build-tools;35.0.0" > /dev/null
+          sudo apt-get update -qq && sudo apt-get install -y ninja-build
+
+      - name: Build APK
+        run: BUILD_JOBS=4 ./android/build.sh
 
       - uses: actions/upload-artifact@v4
         with:
-          name: supermariowar-android-gamepad
+          name: supermariowar-android-controllers
           path: android/app/build/outputs/apk/debug/app-debug.apk
