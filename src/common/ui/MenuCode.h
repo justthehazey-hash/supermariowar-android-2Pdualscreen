@@ -120,6 +120,7 @@ enum MenuCodeEnum {
     MENU_CODE_TO_NET_ROOM_START_IN_PROGRESS,
     MENU_CODE_NET_ROOM_GO,
     MENU_CODE_FOCUS_EXIT_BUTTON,
+    MENU_CODE_VIDEO_FILTER_CHANGED,
 };
 
 enum class MenuNavDirection : unsigned char {

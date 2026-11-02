@@ -51,7 +51,8 @@ SDL_Window* createWindow(bool fullscreen)
 #ifdef __ANDROID__
     fullscreen = true;
 #endif
-    Uint32 window_flags = SDL_WINDOW_RESIZABLE;
+    // OpenGL so the optional CRT filter can draw with its own GL context.
+    Uint32 window_flags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL;
     if (fullscreen)
         window_flags |= SDL_WINDOW_FULLSCREEN;
 
@@ -167,6 +168,7 @@ bool GraphicsSDL::recreateRenderer()
 
 GraphicsSDL::~GraphicsSDL()
 {
+    crt.stop();
     SDL_DestroyTexture(sdl_screen_texture);
     SDL_DestroySurface(sdl_screen_surface);
     SDL_DestroyRenderer(sdl_renderer);
@@ -184,8 +186,41 @@ void GraphicsSDL::setTitle(const char* title) const
     SDL_SetWindowTitle(sdl_window, title);
 }
 
+short GraphicsSDL::setVideoFilter(short filter)
+{
+    if (filter <= CrtFilter::Off || filter >= CrtFilter::Count) {
+        if (crt.active()) {
+            crt.stop();
+            recreateRenderer();
+        }
+        return CrtFilter::Off;
+    }
+
+    // The filter takes over the window: release the renderer first.
+    SDL_DestroyTexture(sdl_screen_texture);
+    sdl_screen_texture = nullptr;
+    SDL_DestroyRenderer(sdl_renderer);
+    sdl_renderer = nullptr;
+
+    if (!crt.start(sdl_window, filter)) {
+        recreateRenderer();
+        return CrtFilter::Off;
+    }
+    return filter;
+}
+
 void GraphicsSDL::flipScreen()
 {
+    if (crt.active()) {
+        if (!crt.present(sdl_screen_surface)) {
+            // Could not draw with the filter: fall back to the plain renderer.
+            printf("[gfx][warning] CRT filter failed, turning it off\n");
+            crt.stop();
+            recreateRenderer();
+        }
+        return;
+    }
+
     // Recover from a lost GPU context (Android resume) instead of drawing nothing.
     if (renderDeviceReset.exchange(false))
         recreateRenderer();

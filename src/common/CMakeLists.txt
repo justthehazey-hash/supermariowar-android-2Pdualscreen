@@ -31,6 +31,8 @@ add_library(CommonFiles STATIC
     gfx/gfxSprite.h
     gfx/ThumbnailCache.cpp
     gfx/ThumbnailCache.h
+    gfx/CrtFilter.cpp
+    gfx/CrtFilter.h
     global.cpp
     input.cpp
     input.h

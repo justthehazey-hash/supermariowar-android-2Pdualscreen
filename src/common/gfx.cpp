@@ -181,6 +181,10 @@ void gfx_changefullscreen(bool fullscreen) {
     gfx.changeFullScreen(fullscreen);
 }
 
+short gfx_setvideofilter(short filter) {
+    return gfx.setVideoFilter(filter);
+}
+
 void gfx_flipscreen() {
     gfx.flipScreen();
 }

@@ -50,3 +50,13 @@ Tests: `android/test-touch.sh` (assignment rules) and `tests/common/test_input_p
 
 Built-in controls are recognised by Android reporting them as an internal device. If a
 handheld reports its built-in pad as external, it is simply treated like a Bluetooth pad.
+
+## CRT filter
+
+Options -> Graphics -> **CRT Filter** draws the game through a RetroArch CRT shader:
+**CRT Lottes** (curved screen, shadow mask, scanlines, bloom) or **CRT EasyMode** (flat,
+sharp scanlines and mask). It switches immediately and is saved with the other settings.
+Off draws exactly as before. The shaders come unmodified from libretro/glsl-shaders
+(crt-lottes: public domain, Timothy Lottes; crt-easymode: GPL, EasyMode) and run as a final
+OpenGL ES pass (`src/common/gfx/CrtFilter.cpp`).
+

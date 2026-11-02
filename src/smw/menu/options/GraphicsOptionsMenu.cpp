@@ -64,6 +64,15 @@ UI_GraphicsOptionsMenu::UI_GraphicsOptionsMenu()
     miFullscreenField->setAutoAdvance(true);
     miFullscreenField->setItemChangedCode(MENU_CODE_TOGGLE_FULLSCREEN);
 
+    miCrtFilterField = new MI_SelectField<short>(&rm->spr_selectfield, 70, 360, "CRT Filter", 500, 220);
+    miCrtFilterField->add("Off", 0);
+    miCrtFilterField->add("CRT Lottes", 1);
+    miCrtFilterField->add("CRT EasyMode", 2);
+    miCrtFilterField->setOutputPtr(&game_values.videofilter);
+    miCrtFilterField->setCurrentValue(game_values.videofilter);
+    miCrtFilterField->setAutoAdvance(true);
+    miCrtFilterField->setItemChangedCode(MENU_CODE_VIDEO_FILTER_CHANGED);
+
     miMenuGraphicsPackField = new MI_PacksField(&rm->spr_selectfield, 70, 240, "Menu Graphics", 500, 220, menugraphicspacklist, MENU_CODE_MENU_GRAPHICS_PACK_CHANGED);
     miWorldGraphicsPackField = new MI_PacksField(&rm->spr_selectfield, 70, 280, "World Graphics", 500, 220, worldgraphicspacklist, MENU_CODE_WORLD_GRAPHICS_PACK_CHANGED);
     miGameGraphicsPackField = new MI_PacksField(&rm->spr_selectfield, 70, 320, "Game Graphics", 500, 220, gamegraphicspacklist, MENU_CODE_GAME_GRAPHICS_PACK_CHANGED);
@@ -82,8 +91,9 @@ UI_GraphicsOptionsMenu::UI_GraphicsOptionsMenu()
     AddControl(miMenuGraphicsPackField, miFullscreenField, miWorldGraphicsPackField, NULL, miGraphicsOptionsMenuBackButton);
 
     AddControl(miWorldGraphicsPackField, miMenuGraphicsPackField, miGameGraphicsPackField, NULL, miGraphicsOptionsMenuBackButton);
-    AddControl(miGameGraphicsPackField, miWorldGraphicsPackField, miGraphicsOptionsMenuBackButton, NULL, miGraphicsOptionsMenuBackButton);
-    AddControl(miGraphicsOptionsMenuBackButton, miGameGraphicsPackField, miTopLayerField, miGameGraphicsPackField, NULL);
+    AddControl(miGameGraphicsPackField, miWorldGraphicsPackField, miCrtFilterField, NULL, miGraphicsOptionsMenuBackButton);
+    AddControl(miCrtFilterField, miGameGraphicsPackField, miGraphicsOptionsMenuBackButton, NULL, miGraphicsOptionsMenuBackButton);
+    AddControl(miGraphicsOptionsMenuBackButton, miCrtFilterField, miTopLayerField, miCrtFilterField, NULL);
 
     AddNonControl(miGraphicsOptionsMenuLeftHeaderBar);
     AddNonControl(miGraphicsOptionsMenuRightHeaderBar);

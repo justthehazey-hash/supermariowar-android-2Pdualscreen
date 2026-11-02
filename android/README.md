@@ -29,3 +29,7 @@ Host-side tests for touch and controller logic: `./android/test-touch.sh`.
 
 The Android groundwork (build setup, asset extraction, touch controls) comes from the
 Android port by @doctormajid7-ux: https://github.com/doctormajid7-ux/supermariowar-android-2Pdualscreen
+
+CRT filters: crt-lottes (public domain, Timothy Lottes) and crt-easymode (GPL, EasyMode)
+from https://github.com/libretro/glsl-shaders, included unmodified.
+

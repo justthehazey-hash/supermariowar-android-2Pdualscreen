@@ -638,6 +638,9 @@ void MenuState::update()
 			gfx_changefullscreen(game_values.fullscreen);
             blitdest = screen;
         }
+        else if (MENU_CODE_VIDEO_FILTER_CHANGED == code) {
+            game_values.videofilter = gfx_setvideofilter(game_values.videofilter);
+        }
         else if (MENU_CODE_TO_GAME_SETUP_MENU == code) {
             printf("MENU_CODE_TO_GAME_SETUP_MENU\n");
             //Moves teams to the first arrays in the list and counts the number of teams

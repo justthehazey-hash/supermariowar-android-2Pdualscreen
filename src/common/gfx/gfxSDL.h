@@ -1,5 +1,7 @@
 #pragma once
 
+#include "CrtFilter.h"
+
 #include <SDL3/SDL.h>
 
 
@@ -10,6 +12,8 @@ public:
     bool init(bool fullscreen);
 
     void flipScreen();
+    // 0 = off, otherwise a CrtFilter::Filter. Returns the filter now in use.
+    short setVideoFilter(short filter);
     void changeFullScreen(bool fullcreen) const;
     void setTitle(const char*) const;
     void showErrorBox(const char*) const;
@@ -17,6 +21,7 @@ public:
 
 private:
     bool recreateRenderer();
+    CrtFilter crt;
     // surface -> texture -> renderer -> window
     SDL_Window* sdl_window = nullptr;
     SDL_Renderer* sdl_renderer = nullptr;

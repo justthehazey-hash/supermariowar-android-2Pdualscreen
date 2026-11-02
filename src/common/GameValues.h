@@ -113,6 +113,7 @@ public:
     short		suicidetime;
     bool		deadteamnotice;
     short		framelimiter;
+    short		videofilter;    // CRT filter: 0 = off, 1 = crt-lottes, 2 = crt-easymode
     short		hiddenblockrespawn;
     CInputPlayerControl inputConfiguration[4][2]; //[NumPlayers][Keyboard/Joystick]
     short		itemrespawntime;
