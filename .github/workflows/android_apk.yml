@@ -80,7 +80,7 @@ jobs:
             --notes "Unstripped native libraries for crash reports from build $short." \
             || echo "::warning::Could not publish debug symbols"
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         with:
           name: supermariowar-android-controllers
           path: android/app/build/outputs/apk/debug/app-debug.apk
