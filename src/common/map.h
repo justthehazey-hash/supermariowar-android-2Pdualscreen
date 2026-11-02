@@ -216,10 +216,14 @@ class CMap
 		//returns the tiletype at the specific position (map coordinates) of the
 		//front most visible tile
     int map(int x, int y) {
+        if (x < 0 || x >= MAPWIDTH || y < 0 || y >= MAPHEIGHT)
+            return tile_flag_nonsolid;  // off the map: empty
         return tileToFlags(mapdatatop[x][y]);
     }
 
     IO_Block * block(short x, short y) {
+        if (x < 0 || x >= MAPWIDTH || y < 0 || y >= MAPHEIGHT)
+            return nullptr;  // off the map: no block
 			return blockdata[x][y];
 		}
 

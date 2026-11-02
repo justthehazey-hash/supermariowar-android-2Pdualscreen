@@ -1642,11 +1642,6 @@ void LoadMapObjects(bool fPreview)
 void CleanUp()
 {
     //delete object list
-    for (CPlayer* player : players) {
-        delete player;
-    }
-    players.clear();
-
     eyecandy[0].clean();
     eyecandy[1].clean();
     eyecandy[2].clean();
@@ -1657,6 +1652,12 @@ void CleanUp()
     objectcontainer[0].clean();
     objectcontainer[1].clean();
     objectcontainer[2].clean();
+
+    // Players last: a carried object's destructor clears its owner's carriedItem.
+    for (CPlayer* player : players) {
+        delete player;
+    }
+    players.clear();
 
     LoadMapObjects(true);
     g_map->clearWarpLocks();

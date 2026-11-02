@@ -526,14 +526,17 @@ void CPlayerAI::Think(COutputControl * playerKeys)
     ***************************************************/
 
     //Make sure we don't jump over something that could kill us
+    // Players wrap around the screen edges, so wrap the checked columns too.
+    auto wrappedColumn = [](int x) -> short {
+        const int width = MAPWIDTH * TILESIZE;
+        x %= width;
+        if (x < 0)
+            x += width;
+        return (short)(x / TILESIZE);
+    };
     short iDeathY = iy / TILESIZE;
-    short iDeathX1 = ix / TILESIZE;
-    short iDeathX2;
-
-    if (ix + PW >= App::screenWidth)
-        iDeathX2 = (ix + PW - App::screenWidth) / TILESIZE;
-    else
-        iDeathX2 = (ix + PW) / TILESIZE;
+    short iDeathX1 = wrappedColumn(ix);
+    short iDeathX2 = wrappedColumn(ix + PW);
 
     if (iDeathY < 0)
         iDeathY = 0;
