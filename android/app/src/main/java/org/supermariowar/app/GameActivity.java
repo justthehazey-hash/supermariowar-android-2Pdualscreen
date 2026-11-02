@@ -193,6 +193,13 @@ public class GameActivity extends SDLActivity {
         if (inputManager != null) inputManager.unregisterInputDeviceListener(padListener);
         if (touchControls != null) touchControls.setInputActive(false);
         super.onDestroy();
+        // SDL finishes the Activity when the game's main() returns (menu Exit) but
+        // leaves the process alive. Android would then reuse it for the next launch,
+        // and the game's static state (cached menus pointing at freed graphics) would
+        // break that session: slow start, missing menu items. This is the only
+        // Activity left at this point (MainActivity finishes itself), so end the
+        // process; settings were already saved by the game's Exit.
+        if (isFinishing()) System.exit(0);
     }
 
     // SDL2's USB permission receiver uses the older overload. Target API 35
