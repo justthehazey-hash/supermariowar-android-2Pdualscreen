@@ -81,6 +81,7 @@ public class GameActivity extends SDLActivity {
     }
 
     @Override protected void onCreate(Bundle state) {
+        CrashReport.install(this); // before SDL starts the game's main()
         gamesInProcess++;
         running = true;
         super.onCreate(state);

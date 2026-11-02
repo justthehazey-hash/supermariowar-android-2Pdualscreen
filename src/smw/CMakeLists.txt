@@ -1,6 +1,7 @@
 if(ANDROID)
 	add_library(smw SHARED)
 	set_target_properties(smw PROPERTIES OUTPUT_NAME main)
+	target_sources(smw PRIVATE AndroidCrashLog.cpp AndroidCrashLog.h)
 else()
 	add_executable(smw WIN32)
 endif()

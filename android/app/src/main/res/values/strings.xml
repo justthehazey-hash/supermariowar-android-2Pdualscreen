@@ -5,6 +5,10 @@
     <string name="android_port_credits">Android port by @doctormajid7-ux\nOriginal game by the Super Mario War contributors</string>
     <string name="prepare_error">Unable to prepare the game</string>
     <string name="close">Close</string>
+    <string name="crash_title">The game crashed last time</string>
+    <string name="crash_copy">Copy report</string>
+    <string name="crash_copied">Crash report copied</string>
+    <string name="crash_continue">Continue</string>
     <string name="touch_jump">JUMP</string>
     <string name="touch_action">ACTION</string>
     <string name="touch_item">ITEM</string>

@@ -67,6 +67,7 @@
 #ifdef __ANDROID__
 #include <jni.h>
 #include <unistd.h> // _exit
+#include "AndroidCrashLog.h"
 #endif
 
 #ifdef _MSC_VER
@@ -330,6 +331,9 @@ void main_game();
 
 int main(int argc, char *argv[])
 {
+#ifdef __ANDROID__
+    android_crash_log_init();
+#endif
     const cmd::Args cmd = cmd::parse_args(argc, argv);
     if (!cmd.success) {
         return 1;
@@ -468,8 +472,7 @@ void main_game()
     // next launch, where this game's static state (menus referencing freed
     // graphics) breaks it. Settings were saved by the Exit menu already, so end
     // the process right here instead of tearing SDL down and waiting on Android.
-    fflush(stdout);
-    fflush(stderr);
+    android_crash_log_clean_exit();
     _exit(0);
 #endif
 

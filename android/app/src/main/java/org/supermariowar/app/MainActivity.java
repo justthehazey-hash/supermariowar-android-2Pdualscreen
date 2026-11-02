@@ -33,6 +33,38 @@ public class MainActivity extends Activity {
         status.setText(getString(R.string.preparing) + "\n\n" + getString(R.string.android_port_credits));
         status.setGravity(android.view.Gravity.CENTER);
         setContentView(status);
+        String report = CrashReport.take(this);
+        if (report != null) showCrashReport(report);
+        else prepareAndStart();
+    }
+
+    /** Offer last run's crash report for copying, then continue to the game. */
+    private void showCrashReport(String report) {
+        TextView text = new TextView(this);
+        text.setText(report);
+        text.setTextIsSelectable(true);
+        text.setTypeface(android.graphics.Typeface.MONOSPACE);
+        text.setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 10);
+        text.setPadding(24, 16, 24, 16);
+        android.widget.ScrollView scroll = new android.widget.ScrollView(this);
+        scroll.addView(text);
+        new AlertDialog.Builder(this)
+            .setTitle(R.string.crash_title)
+            .setView(scroll)
+            .setCancelable(false)
+            .setNeutralButton(R.string.crash_copy, (dialog, which) -> {
+                android.content.ClipboardManager clipboard =
+                    (android.content.ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+                if (clipboard != null)
+                    clipboard.setPrimaryClip(android.content.ClipData.newPlainText("SMW crash report", report));
+                android.widget.Toast.makeText(this, R.string.crash_copied, android.widget.Toast.LENGTH_LONG).show();
+                prepareAndStart();
+            })
+            .setPositiveButton(R.string.crash_continue, (dialog, which) -> prepareAndStart())
+            .show();
+    }
+
+    private void prepareAndStart() {
         new Thread(() -> {
             try {
                 prepareData();

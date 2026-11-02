@@ -4,6 +4,9 @@ on:
     branches: [master, android-sdl3]
   workflow_dispatch:
 
+permissions:
+  contents: write   # publish debug symbols as a pre-release
+
 jobs:
   apk:
     # Pinned: ubuntu-latest is moving to a new image; 24.04 ships the Android SDK.
@@ -56,6 +59,22 @@ jobs:
             echo "::error title=APK build::$(grep -E 'error|Error|FAILED' /tmp/build.log | tail -n 15 | tr '\n' ' ' | cut -c1-1500)"
             exit 1
           }
+
+      # Unstripped native libraries (with debug info) for turning on-device crash
+      # reports (library + offset) into function names and source lines.
+      - name: Publish debug symbols
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          short="${GITHUB_SHA::7}"
+          mkdir -p /tmp/symbols
+          find build-android-arm64 -path build-android-arm64/apk-libs -prune -o -name 'lib*.so' -print \
+            -exec cp '{}' /tmp/symbols/ \;
+          tar czf "/tmp/symbols-$short.tar.gz" -C /tmp/symbols .
+          gh release create "symbols-$short" "/tmp/symbols-$short.tar.gz" --prerelease \
+            --target "$GITHUB_SHA" --title "Debug symbols $short" \
+            --notes "Unstripped native libraries for crash reports from build $short." \
+            || echo "::warning::Could not publish debug symbols"
 
       - uses: actions/upload-artifact@v4
         with:
