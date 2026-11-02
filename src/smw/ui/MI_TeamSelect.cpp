@@ -191,7 +191,7 @@ MenuCodeEnum MI_TeamSelect::SendInput(CPlayerInput * playerInput)
         if (playerInput->outputControls[iPlayer].menu_select.fPressed) {
             fReady[iPlayer] = true;
 
-            if (fAllReady && (DEVICE_KEYBOARD != playerInput->inputControls[iPlayer]->iDevice || iPlayer == 0)) {
+            if (fAllReady && !playerInput->UsesSharedKeyboard(iPlayer)) {
                 fModifying = false;
                 printf("MI_TeamSelect::SendInput MENU_CODE_TO_GAME_SETUP_MENU\n");
                 return MENU_CODE_TO_GAME_SETUP_MENU;
@@ -211,7 +211,7 @@ MenuCodeEnum MI_TeamSelect::SendInput(CPlayerInput * playerInput)
                 fReady[iPlayer] = false;
                 fAllReady = false;
             } else {
-                if (DEVICE_KEYBOARD != playerInput->inputControls[iPlayer]->iDevice || iPlayer == 0) {
+                if (!playerInput->UsesSharedKeyboard(iPlayer)) {
                     fModifying = false;
                     return MENU_CODE_BACK_TO_MATCH_SELECTION_MENU;
                 }

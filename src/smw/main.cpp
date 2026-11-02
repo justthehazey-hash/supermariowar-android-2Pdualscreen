@@ -64,6 +64,11 @@
 #include <emscripten.h>
 #endif
 
+#ifdef __ANDROID__
+#include <jni.h>
+#include <unistd.h> // _exit
+#endif
+
 #ifdef _MSC_VER
 #if _MSC_VER >= 1400
     #include <stdio.h>
@@ -128,6 +133,36 @@ extern WorldList* worldlist;
 extern std::string RootDataDirectory;
 extern CGameValues game_values;
 extern CResourceManager* rm;
+
+#ifdef __ANDROID__
+extern "C" JNIEXPORT jboolean JNICALL
+Java_org_supermariowar_app_GameActivity_nativeIsGameplay(JNIEnv*, jobject)
+{
+    return game_values.appstate == AppState::Game ? JNI_TRUE : JNI_FALSE;
+}
+
+// Handheld/Bluetooth controller input, already assigned to a player by the activity.
+// Called on the UI thread; only queues an SDL event for the game thread.
+extern "C" JNIEXPORT void JNICALL
+Java_org_supermariowar_app_GameActivity_nativePadButton(JNIEnv*, jclass, jint player, jint button, jboolean down)
+{
+    CPlayerInput::PushPadEvent((short)player, (short)button, down == JNI_TRUE);
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_org_supermariowar_app_GameActivity_nativePadDetach(JNIEnv*, jclass, jint player)
+{
+    CPlayerInput::PushPadEvent((short)player, PAD_DETACH, false);
+}
+
+extern "C" JNIEXPORT jboolean JNICALL
+Java_org_supermariowar_app_GameActivity_nativeAllowsDpadUp(JNIEnv*, jobject)
+{
+    return game_values.appstate != AppState::Game
+        || game_values.flags.pausegame || game_values.flags.exitinggame
+        ? JNI_TRUE : JNI_FALSE;
+}
+#endif
 
 //*************************************
 //  MAIN LOOP
@@ -219,6 +254,8 @@ void init_joysticks()
         joysticks[i] = SDL_OpenJoystick(i);
 
     SDL_SetJoystickEventsEnabled(true);
+
+    CPlayerInput::RegisterPadEvents();
 }
 
 void create_gamemodes()
@@ -425,6 +462,16 @@ void main_game()
 
 
     printf("\n---------------- shutdown ----------------\n");
+
+#ifdef __ANDROID__
+    // Android keeps the process alive after the game ends and may hand it to the
+    // next launch, where this game's static state (menus referencing freed
+    // graphics) breaks it. Settings were saved by the Exit menu already, so end
+    // the process right here instead of tearing SDL down and waiting on Android.
+    fflush(stdout);
+    fflush(stderr);
+    _exit(0);
+#endif
 
     for (short i = 0; i < GAMEMODE_LAST; i++)
         delete gamemodes[i];

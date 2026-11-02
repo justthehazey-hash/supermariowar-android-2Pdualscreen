@@ -9,13 +9,14 @@ public:
 
     bool init(bool fullscreen);
 
-    void flipScreen() const;
+    void flipScreen();
     void changeFullScreen(bool fullcreen) const;
     void setTitle(const char*) const;
     void showErrorBox(const char*) const;
     void takeScreenshot() const;
 
 private:
+    bool recreateRenderer();
     // surface -> texture -> renderer -> window
     SDL_Window* sdl_window = nullptr;
     SDL_Renderer* sdl_renderer = nullptr;

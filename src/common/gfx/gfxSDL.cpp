@@ -4,6 +4,7 @@
 
 #include <SDL3_image/SDL_image.h>
 
+#include <atomic>
 #include <chrono>
 #include <iomanip>
 #include <sstream>
@@ -47,6 +48,9 @@ void quitSdl()
 
 SDL_Window* createWindow(bool fullscreen)
 {
+#ifdef __ANDROID__
+    fullscreen = true;
+#endif
     Uint32 window_flags = SDL_WINDOW_RESIZABLE;
     if (fullscreen)
         window_flags |= SDL_WINDOW_FULLSCREEN;
@@ -61,8 +65,8 @@ SDL_Window* createWindow(bool fullscreen)
 }
 
 const char* findPreferredRendererIndex() {
-#ifdef SDL2_FORCE_GLES
-    return "opengles";
+#if defined(SDL2_FORCE_GLES) || defined(__ANDROID__)
+    return "opengles2";
 #endif
     return nullptr;
 }
@@ -70,6 +74,10 @@ const char* findPreferredRendererIndex() {
 SDL_Renderer* createRenderer(SDL_Window* window)
 {
     SDL_Renderer* renderer = SDL_CreateRenderer(window, findPreferredRendererIndex());
+    if (!renderer && findPreferredRendererIndex()) {
+        printf("[gfx][warning] Preferred renderer unavailable (%s), using the default\n", SDL_GetError());
+        renderer = SDL_CreateRenderer(window, nullptr);
+    }
     if (!renderer)
         throw_error("Couldn't create renderer: {}", SDL_GetError());
 
@@ -102,6 +110,16 @@ SDL_Texture* createScreenTexture(SDL_Renderer* renderer)
 
     return texture;
 }
+// Set when the GPU context was lost or reset (Android: app sent to the
+// background and back). Events may arrive on another thread, hence atomic.
+std::atomic<bool> renderDeviceReset {false};
+
+bool SDLCALL watchRenderDevice(void*, SDL_Event* event)
+{
+    if (event->type == SDL_EVENT_RENDER_DEVICE_RESET || event->type == SDL_EVENT_RENDER_DEVICE_LOST)
+        renderDeviceReset = true;
+    return true;
+}
 } // namespace
 
 
@@ -119,6 +137,31 @@ bool GraphicsSDL::init(bool fullscreen)
         SDL_BITSPERPIXEL(sdl_screen_surface->format));
 
     screen = sdl_screen_surface;
+    SDL_AddEventWatch(watchRenderDevice, nullptr);
+    return true;
+}
+
+bool GraphicsSDL::recreateRenderer()
+{
+    if (!sdl_window)
+        return false;
+
+    SDL_DestroyTexture(sdl_screen_texture);
+    sdl_screen_texture = nullptr;
+    SDL_DestroyRenderer(sdl_renderer);
+    sdl_renderer = nullptr;
+
+    try {
+        sdl_renderer = createRenderer(sdl_window);
+        sdl_screen_texture = createScreenTexture(sdl_renderer);
+    } catch (const std::exception& ex) {
+        printf("[gfx][warning] Renderer recovery failed: %s\n", ex.what());
+        SDL_DestroyRenderer(sdl_renderer);
+        sdl_renderer = nullptr;
+        return false;
+    }
+
+    printf("[gfx] Renderer recreated after the render device was reset\n");
     return true;
 }
 
@@ -141,16 +184,30 @@ void GraphicsSDL::setTitle(const char* title) const
     SDL_SetWindowTitle(sdl_window, title);
 }
 
-void GraphicsSDL::flipScreen() const
+void GraphicsSDL::flipScreen()
 {
-    SDL_UpdateTexture(sdl_screen_texture, nullptr, sdl_screen_surface->pixels, sdl_screen_surface->pitch);
-    SDL_RenderClear(sdl_renderer);
-    SDL_RenderTexture(sdl_renderer, sdl_screen_texture, nullptr, nullptr);
+    // Recover from a lost GPU context (Android resume) instead of drawing nothing.
+    if (renderDeviceReset.exchange(false))
+        recreateRenderer();
+
+    if (!sdl_screen_texture || !SDL_UpdateTexture(sdl_screen_texture, nullptr,
+            sdl_screen_surface->pixels, sdl_screen_surface->pitch)) {
+        if (!recreateRenderer() || !SDL_UpdateTexture(sdl_screen_texture, nullptr,
+                sdl_screen_surface->pixels, sdl_screen_surface->pitch))
+            return;
+    }
+    if (!SDL_RenderClear(sdl_renderer) || !SDL_RenderTexture(sdl_renderer, sdl_screen_texture, nullptr, nullptr)) {
+        recreateRenderer();
+        return;
+    }
     SDL_RenderPresent(sdl_renderer);
 }
 
 void GraphicsSDL::changeFullScreen(bool fullscreen) const
 {
+#ifdef __ANDROID__
+    fullscreen = true;
+#endif
     if (!SDL_SetWindowFullscreen(sdl_window, fullscreen)) {
         fprintf(stderr, "[gfx] Couldn't toggle fullscreen mode: %s\n", SDL_GetError());
         return;

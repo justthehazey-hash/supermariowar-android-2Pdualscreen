@@ -3,12 +3,138 @@
 #include "GameValues.h"
 #include "GlobalConstants.h"
 
+#include <atomic>
+
 extern CGameValues game_values;
 
 namespace {
 // Intentional cast from -1 as a keyboard sentinel
 constexpr SDL_JoystickID KEYBOARD_DEVICE_ID = static_cast<SDL_JoystickID>(DEVICE_KEYBOARD);
+std::atomic<Uint32> padEventType {0};
 } // namespace
+
+void CPlayerInput::RegisterPadEvents()
+{
+    if (padEventType.load() == 0) {
+        Uint32 type = SDL_RegisterEvents(1); // 0 when no event types are left
+        if (type != 0)
+            padEventType.store(type);
+    }
+}
+
+bool CPlayerInput::PushPadEvent(short iPlayer, short iButton, bool fDown)
+{
+    Uint32 type = padEventType.load();
+    if (type == 0 || iPlayer < 0 || iPlayer >= MAX_PLAYERS)
+        return false;
+
+    SDL_Event event;
+    SDL_zero(event);
+    event.type = type;
+    event.user.code = (iPlayer << 8) | (iButton & 0xFF);
+    event.user.data1 = (void*)(intptr_t)(fDown ? 1 : 0);
+    return SDL_PushEvent(&event);
+}
+
+bool CPlayerInput::IsPadEvent(const SDL_Event& event)
+{
+    Uint32 type = padEventType.load();
+    return type != 0 && event.type == type;
+}
+
+short CPlayerInput::PadKeyIndex(short iButton, short iGameState)
+{
+    if (iGameState == 1) {
+        //up, down, left, right, select, cancel, random, fast scroll
+        switch (iButton) {
+            case PAD_UP: return 0;
+            case PAD_DOWN: return 1;
+            case PAD_LEFT: return 2;
+            case PAD_RIGHT: return 3;
+            case PAD_A: case PAD_START: return 4;
+            case PAD_B: case PAD_SELECT: return 5;
+            case PAD_X: return 6;
+            case PAD_Y: case PAD_L: case PAD_R: return 7;
+        }
+    } else {
+        //left, right, jump, down, turbo, powerup, start, cancel
+        //Up does nothing in a match so a tilted stick cannot jump; A jumps.
+        switch (iButton) {
+            case PAD_LEFT: return 0;
+            case PAD_RIGHT: return 1;
+            case PAD_A: return 2;
+            case PAD_DOWN: return 3;
+            case PAD_B: case PAD_X: return 4;
+            case PAD_Y: case PAD_L: case PAD_R: return 5;
+            case PAD_START: return 6;
+            case PAD_SELECT: return 7;
+        }
+    }
+    return -1;
+}
+
+void CPlayerInput::PadButton(short iPlayer, short iButton, bool fDown, short iGameState)
+{
+    if (iPlayer < 0 || iPlayer >= MAX_PLAYERS || iButton < 0 || iButton >= PAD_BUTTONS)
+        return;
+
+    padAttached[iPlayer] = true;
+    COutputControl* outputControl = &outputControls[iPlayer];
+    short* held = padHeld[iPlayer];
+
+    short iKey;
+    if (fDown) {
+        if (held[iButton] >= 0)
+            return; //already down
+
+        iKey = PadKeyIndex(iButton, iGameState);
+        held[iButton] = iKey;
+        if (iKey < 0)
+            return;
+
+        //Ignore input for cpu controlled players (same rule as keyboard input)
+        if (iGameState == 0 && game_values.playercontrol[iPlayer] != 1 && iKey < 6)
+            return;
+
+        if (!outputControl->keys[iKey].fDown)
+            outputControl->keys[iKey].fPressed = true;
+        outputControl->keys[iKey].fDown = true;
+    } else {
+        //Release the key this button pressed, even if the screen changed meanwhile
+        iKey = held[iButton];
+        held[iButton] = -1;
+        if (iKey < 0)
+            return;
+
+        //Another held button (e.g. B and X both run) keeps the key down
+        for (short b = 0; b < PAD_BUTTONS; b++)
+            if (held[b] == iKey)
+                return;
+
+        outputControl->keys[iKey].fDown = false;
+    }
+}
+
+void CPlayerInput::PadDetach(short iPlayer)
+{
+    if (iPlayer < 0 || iPlayer >= MAX_PLAYERS)
+        return;
+
+    for (short b = 0; b < PAD_BUTTONS; b++)
+        if (padHeld[iPlayer][b] >= 0)
+            PadButton(iPlayer, b, false, 0);
+
+    padAttached[iPlayer] = false;
+}
+
+bool CPlayerInput::UsesSharedKeyboard(short iPlayer) const
+{
+    if (iPlayer <= 0 || iPlayer >= MAX_PLAYERS)
+        return false;
+    if (padAttached[iPlayer])
+        return false;
+    return inputControls[iPlayer] && inputControls[iPlayer]->iDevice == DEVICE_KEYBOARD;
+}
 
 CPlayerInput::CPlayerInput()
 {
@@ -18,6 +144,12 @@ CPlayerInput::CPlayerInput()
 			outputControls[iPlayer].keys[iKey].fDown = false;
 		}
 	}
+
+    for (int iPlayer = 0; iPlayer < MAX_PLAYERS; iPlayer++) {
+        padAttached[iPlayer] = false;
+        for (int b = 0; b < PAD_BUTTONS; b++)
+            padHeld[iPlayer][b] = -1;
+    }
 
     iPressedKey = 0;
 }
@@ -71,6 +203,16 @@ void CPlayerInput::ResetKeys()
 //iGameState == 0 for in game and 1 for menu
 void CPlayerInput::Update(SDL_Event event, short iGameState)
 {
+    if (IsPadEvent(event)) {
+        short iPlayer = (event.user.code >> 8) & 0xFF;
+        short iButton = event.user.code & 0xFF;
+        if (iButton == PAD_DETACH)
+            PadDetach(iPlayer);
+        else
+            PadButton(iPlayer, iButton, event.user.data1 != nullptr, iGameState);
+        return;
+    }
+
 	bool fFound = false;
     for (short iPlayer = -1; iPlayer < MAX_PLAYERS; iPlayer++) {
 		CInputControl * inputControl;

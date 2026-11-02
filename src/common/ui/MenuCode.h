@@ -119,6 +119,7 @@ enum MenuCodeEnum {
     MENU_CODE_NET_CHAT_SEND,
     MENU_CODE_TO_NET_ROOM_START_IN_PROGRESS,
     MENU_CODE_NET_ROOM_GO,
+    MENU_CODE_FOCUS_EXIT_BUTTON,
 };
 
 enum class MenuNavDirection : unsigned char {

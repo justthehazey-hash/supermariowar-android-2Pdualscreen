@@ -141,7 +141,13 @@ void CGameValues::init()
 {
     //set standard game values
     playercontrol[0]  = 1;
+#ifdef __ANDROID__
+    // A fresh mobile install must not wait for a second keyboard player to ready up.
+    // ReadBinaryConfig still restores any explicitly saved player setup.
+    playercontrol[1]  = 2;
+#else
     playercontrol[1]  = 1;
+#endif
     showfps       = false;
     frameadvance    = false;
     autokill      = false;

@@ -54,9 +54,7 @@ MenuCodeEnum MI_TextField::SendInput(CPlayerInput * playerInput)
     for (int iPlayer = 0; iPlayer < 4; iPlayer++) {
         // NOTE: copied from UI_Menu::SendInput
         // Only let player 1 on the keyboard control the menu
-        if (iPlayer != 0
-            && game_values.playerInput.inputControls[iPlayer]
-            && game_values.playerInput.inputControls[iPlayer]->iDevice == DEVICE_KEYBOARD) {
+        if (game_values.playerInput.UsesSharedKeyboard(iPlayer)) {
             continue;
         }
 

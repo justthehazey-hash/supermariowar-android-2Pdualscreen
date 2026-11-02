@@ -1740,7 +1740,12 @@ bool updateExitPauseDialog(short iCountDownState) // true on exit
                 else if (playerKeys->menu_right.fPressed)
                     game_values.flags.exityes = false;
 
-                if (playerKeys->menu_select.fPressed) {
+                //Back/cancel closes the dialog, the same as choosing "No"
+                if (playerKeys->menu_cancel.fPressed) {
+                    game_values.flags.exityes = false;
+                    game_values.flags.exitinggame = false;
+                    game_values.playerInput.ResetKeys();
+                } else if (playerKeys->menu_select.fPressed) {
                     if (game_values.flags.exityes) {
                         CleanUp();
                         game_values.flags.exitinggame = false;

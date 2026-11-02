@@ -106,7 +106,7 @@ MenuCodeEnum UI_Menu::SendInput(CPlayerInput* playerInput)
                 continue;
         }
         // Only let player 1 on the keyboard control the menu unless there is another controlling team
-        else if (iPlayer != 0 && game_values.playerInput.inputControls[iPlayer] && game_values.playerInput.inputControls[iPlayer]->iDevice == DEVICE_KEYBOARD) {
+        else if (game_values.playerInput.UsesSharedKeyboard(iPlayer)) {
             continue;
         }
 
@@ -173,6 +173,18 @@ MenuCodeEnum UI_Menu::MoveNextControl(MenuNavDirection iDirection)
     }
 
     return MENU_CODE_NONE;
+}
+
+void UI_Menu::focusControl(UI_Control* control)
+{
+    if (!control || control == m_currentFocus)
+        return;
+
+    if (m_currentFocus)
+        m_currentFocus->Select(false);
+
+    m_currentFocus = control;
+    fModifyingItem = m_currentFocus->Select(true);
 }
 
 void UI_Menu::RememberCurrent()

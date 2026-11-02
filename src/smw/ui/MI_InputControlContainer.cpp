@@ -142,6 +142,13 @@ MenuCodeEnum MI_InputControlField::SendInput(CPlayerInput *)
 
         game_values.playerInput.Update(event, 1);
 
+        //A handheld/Bluetooth controller press cannot be bound here (those are handled
+        //outside the bindings); treat it as cancel so the screen never waits forever.
+        if (CPlayerInput::IsPadEvent(event) && event.user.data1 != nullptr) {
+            done = true;
+            continue;
+        }
+
         //Check to see if user cancelled
         //This was causing trouble with the joystick.  If a user had the menu cancel button
         //configured to something that he wanted to use in game, it would cancel that action.

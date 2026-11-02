@@ -13,6 +13,9 @@ class UI_MainMenu : public UI_Menu {
 public:
     UI_MainMenu();
 
+    /// Back on the main menu highlights Exit instead of quitting outright.
+    void focusExitButton();
+
 private:
     MI_Image* miSMWTitle;
     MI_Image* miSMWVersion;

@@ -6,6 +6,10 @@
 
 Super Mario War is a fan-made multiplayer Super Mario Bros. style deathmatch game in which players try to beat one another in a variety of gameplay modes. You can play on teams, design your own levels, design your own worlds, and much more!
 
+> **Android:** this fork adds an Android build with handheld and Bluetooth controller
+> support (up to four players). See [android/README.md](android/README.md) and
+> [docs/android.md](docs/android.md).
+
 - [History](#history)
 - [About](#about)
 - [Building](#building-instructions)

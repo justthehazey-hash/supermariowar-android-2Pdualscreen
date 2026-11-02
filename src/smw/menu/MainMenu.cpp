@@ -64,7 +64,11 @@ UI_MainMenu::UI_MainMenu()
 #endif
 
     setInitialFocus(miMainStartButton);
-#ifndef __EMSCRIPTEN__
+#if defined(__ANDROID__)
+    // With controllers, mashing B to get back here must not close the app:
+    // Back moves to Exit, and quitting takes a deliberate press on it.
+    SetCancelCode(MENU_CODE_FOCUS_EXIT_BUTTON);
+#elif !defined(__EMSCRIPTEN__)
     SetCancelCode(MENU_CODE_EXIT_APPLICATION);
 #endif
 
@@ -72,3 +76,10 @@ UI_MainMenu::UI_MainMenu()
     AddNonControl(miSMWVersion);
     // AddNonControl(miSMWVersionText);
 };
+
+void UI_MainMenu::focusExitButton()
+{
+#ifndef __EMSCRIPTEN__
+    focusControl(miExitButton);
+#endif
+}
