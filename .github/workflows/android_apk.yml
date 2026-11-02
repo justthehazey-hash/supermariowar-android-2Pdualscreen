@@ -1,7 +1,7 @@
 name: Android APK
 on:
   push:
-    branches: [master, android-sdl3]
+    branches: [master]
   workflow_dispatch:
 
 permissions:
@@ -71,12 +71,16 @@ jobs:
           find build-android-arm64 -path build-android-arm64/apk-libs -prune -o -name 'lib*.so' -print \
             -exec cp '{}' /tmp/symbols/ \;
           tar czf "/tmp/symbols-$short.tar.gz" -C /tmp/symbols .
+          if gh release view "symbols-$short" > /dev/null 2>&1; then
+            echo "Debug symbols for $short already published"
+            exit 0
+          fi
           gh release create "symbols-$short" "/tmp/symbols-$short.tar.gz" --prerelease \
             --target "$GITHUB_SHA" --title "Debug symbols $short" \
             --notes "Unstripped native libraries for crash reports from build $short." \
             || echo "::warning::Could not publish debug symbols"
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: supermariowar-android-controllers
           path: android/app/build/outputs/apk/debug/app-debug.apk
