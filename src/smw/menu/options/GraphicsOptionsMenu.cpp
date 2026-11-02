@@ -68,6 +68,7 @@ UI_GraphicsOptionsMenu::UI_GraphicsOptionsMenu()
     miCrtFilterField->add("Off", 0);
     miCrtFilterField->add("CRT Lottes", 1);
     miCrtFilterField->add("CRT EasyMode", 2);
+    miCrtFilterField->add("CRT EasyMode Halation", 3);
     miCrtFilterField->setOutputPtr(&game_values.videofilter);
     miCrtFilterField->setCurrentValue(game_values.videofilter);
     miCrtFilterField->setAutoAdvance(true);

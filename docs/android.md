@@ -54,9 +54,11 @@ handheld reports its built-in pad as external, it is simply treated like a Bluet
 ## CRT filter
 
 Options -> Graphics -> **CRT Filter** draws the game through a RetroArch CRT shader:
-**CRT Lottes** (curved screen, shadow mask, scanlines, bloom) or **CRT EasyMode** (flat,
-sharp scanlines and mask). It switches immediately and is saved with the other settings.
+**CRT Lottes** (curved screen, shadow mask, scanlines, bloom), **CRT EasyMode** (flat,
+sharp scanlines and mask) or **CRT EasyMode Halation** (EasyMode with a glow around bright
+areas; a 5-pass preset). It switches immediately and is saved with the other settings.
 Off draws exactly as before. The shaders come unmodified from libretro/glsl-shaders
-(crt-lottes: public domain, Timothy Lottes; crt-easymode: GPL, EasyMode) and run as a final
-OpenGL ES pass (`src/common/gfx/CrtFilter.cpp`).
+(crt-lottes: public domain, Timothy Lottes; crt-easymode and crt-easymode-halation: GPL,
+EasyMode). `src/common/gfx/CrtFilter.cpp` runs them like RetroArch: multi-pass presets,
+PassPrevN inputs, `#pragma parameter` defaults as uniforms, sRGB intermediates on ES 3.
 
