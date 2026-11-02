@@ -23,14 +23,18 @@ jobs:
 
       - name: Android SDK, NDK and Ninja
         run: |
+          # Report failures as annotations so they are visible without the full log.
+          fail() { echo "::error title=Android setup::$1"; exit 1; }
+          retry() { for i in 1 2 3; do "$@" && return 0; echo "retry $i: $*"; sleep 15; done; return 1; }
           sdk="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-}}"
           manager="$sdk/cmdline-tools/latest/bin/sdkmanager"
           if [ -z "$sdk" ] || [ ! -x "$manager" ]; then
             # Fallback when the runner image has no SDK preinstalled.
             sdk="$HOME/android-sdk"
             mkdir -p "$sdk/cmdline-tools"
-            curl -sSL -o /tmp/cmdline-tools.zip \
-              https://dl.google.com/android/repository/commandlinetools-linux-13114758_latest.zip
+            retry curl -fsSL -o /tmp/cmdline-tools.zip \
+              https://dl.google.com/android/repository/commandlinetools-linux-13114758_latest.zip \
+              || fail "Could not download Android command-line tools"
             unzip -q /tmp/cmdline-tools.zip -d "$sdk/cmdline-tools"
             mv "$sdk/cmdline-tools/cmdline-tools" "$sdk/cmdline-tools/latest"
             manager="$sdk/cmdline-tools/latest/bin/sdkmanager"
@@ -38,11 +42,20 @@ jobs:
           echo "ANDROID_HOME=$sdk" >> "$GITHUB_ENV"
           echo "ANDROID_SDK_ROOT=$sdk" >> "$GITHUB_ENV"
           yes | "$manager" --licenses > /dev/null || true
-          "$manager" "ndk;27.2.12479018" "platforms;android-35" "build-tools;35.0.0" > /dev/null
-          sudo apt-get update -qq && sudo apt-get install -y ninja-build
+          retry "$manager" "ndk;27.2.12479018" "platforms;android-35" "build-tools;35.0.0" > /tmp/sdkmanager.log 2>&1 \
+            || fail "sdkmanager failed: $(tail -c 600 /tmp/sdkmanager.log | tr '\n' ' ')"
+          if ! command -v ninja > /dev/null; then
+            retry sudo apt-get update -qq || fail "apt-get update failed"
+            retry sudo apt-get install -y ninja-build || fail "Could not install ninja-build"
+          fi
 
       - name: Build APK
-        run: BUILD_JOBS=4 ./android/build.sh
+        run: |
+          set -o pipefail
+          BUILD_JOBS=4 ./android/build.sh 2>&1 | tee /tmp/build.log || {
+            echo "::error title=APK build::$(grep -E 'error|Error|FAILED' /tmp/build.log | tail -n 15 | tr '\n' ' ' | cut -c1-1500)"
+            exit 1
+          }
 
       - uses: actions/upload-artifact@v4
         with:
