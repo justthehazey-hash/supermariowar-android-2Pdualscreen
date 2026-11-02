@@ -71,7 +71,6 @@ UI_GraphicsOptionsMenu::UI_GraphicsOptionsMenu()
     miCrtFilterField->add("CRT EasyMode Halation", 3);
     miCrtFilterField->setOutputPtr(&game_values.videofilter);
     miCrtFilterField->setCurrentValue(game_values.videofilter);
-    miCrtFilterField->setAutoAdvance(true);
     miCrtFilterField->setItemChangedCode(MENU_CODE_VIDEO_FILTER_CHANGED);
 
     miMenuGraphicsPackField = new MI_PacksField(&rm->spr_selectfield, 70, 240, "Menu Graphics", 500, 220, menugraphicspacklist, MENU_CODE_MENU_GRAPHICS_PACK_CHANGED);

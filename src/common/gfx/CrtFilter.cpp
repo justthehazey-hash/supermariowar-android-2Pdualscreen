@@ -159,6 +159,20 @@ std::vector<std::pair<std::string, float>> parameterDefaults(const char* source)
     return params;
 }
 
+// Parameter values that differ from the shaders' defaults. The game frame is
+// 480 progressive lines: shaders that treat 400+ lines as interlaced video
+// would draw alternate lines on alternate frames (flicker, no scanlines).
+void applyOverrides(std::vector<std::pair<std::string, float>>& params)
+{
+    static const std::pair<const char*, float> overrides[] = {
+        {"INTERLACING_TOGGLE", 0.0f},  // crt-easymode-halation
+    };
+    for (auto& [name, value] : params)
+        for (const auto& [overrideName, overrideValue] : overrides)
+            if (name == overrideName)
+                value = overrideValue;
+}
+
 // Fixed attribute slots, bound before linking.
 enum : unsigned { kVertexSlot = 0, kTexSlot = 1, kColorSlot = 2 };
 } // namespace
@@ -310,6 +324,7 @@ bool CrtFilter::createResources()
             return false;
         }
         pass.parameters = parameterDefaults(def.source);
+        applyOverrides(pass.parameters);
         if (index + 1 < chain.count && !createTarget(pass, def.srgbFramebuffer))
             return false;
     }
