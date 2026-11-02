@@ -20,6 +20,9 @@ import android.view.MotionEvent;
 import android.view.ViewGroup;
 
 public class GameActivity extends SDLActivity {
+    /** Games started in this process, and whether one is running now (UI thread only). */
+    static int gamesInProcess;
+    static boolean running;
     private TouchControlsView touchControls;
     private InputManager inputManager;
     private final PadManager pads = new PadManager(new PadManager.Sink() {
@@ -95,6 +98,8 @@ public class GameActivity extends SDLActivity {
     }
 
     @Override protected void onCreate(Bundle state) {
+        gamesInProcess++;
+        running = true;
         super.onCreate(state);
         // SDL can return early if native library loading fails.
         if (mLayout != null) {
@@ -104,7 +109,27 @@ public class GameActivity extends SDLActivity {
             modeHandler.post(modePoll);
             inputManager = (InputManager) getSystemService(Context.INPUT_SERVICE);
             if (inputManager != null) inputManager.registerInputDeviceListener(padListener, modeHandler);
+            showLaunchNote();
         }
+    }
+
+    /** Temporary diagnostic for the relaunch bug: build and whether this process is fresh. */
+    private void showLaunchNote() {
+        android.widget.TextView note = new android.widget.TextView(this);
+        boolean restarted = getIntent() != null && getIntent().getBooleanExtra(MainActivity.EXTRA_RESTARTED, false);
+        note.setText("build " + BuildConfig.VERSION_CODE + " \u00b7 "
+                + (gamesInProcess == 1 ? "fresh start" : "REUSED process (game " + gamesInProcess + ")")
+                + (restarted ? " \u00b7 restarted stale process" : ""));
+        note.setTextColor(0xFFFFFFFF);
+        note.setBackgroundColor(0x99000000);
+        note.setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 11);
+        note.setPadding(12, 4, 12, 4);
+        android.widget.RelativeLayout.LayoutParams params = new android.widget.RelativeLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.addRule(android.widget.RelativeLayout.ALIGN_PARENT_BOTTOM);
+        params.addRule(android.widget.RelativeLayout.ALIGN_PARENT_LEFT);
+        mLayout.addView(note, params);
+        modeHandler.postDelayed(() -> mLayout.removeView(note), 6000);
     }
 
     private static boolean hasGamepadSource(int sources) {
@@ -192,6 +217,7 @@ public class GameActivity extends SDLActivity {
         modeHandler.removeCallbacks(swapCheck);
         if (inputManager != null) inputManager.unregisterInputDeviceListener(padListener);
         if (touchControls != null) touchControls.setInputActive(false);
+        running = false;
         super.onDestroy();
         // SDL finishes the Activity when the game's main() returns (menu Exit) but
         // leaves the process alive. Android would then reuse it for the next launch,

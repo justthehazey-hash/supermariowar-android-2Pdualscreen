@@ -10,6 +10,7 @@ import java.io.*;
 
 /** Extract on a worker before SDL loads native libraries; never request shared storage. */
 public class MainActivity extends Activity {
+    static final String EXTRA_RESTARTED = "org.supermariowar.app.RESTARTED";
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);
         // Icon tapped while the game is already running in this task (e.g. after
@@ -18,6 +19,16 @@ public class MainActivity extends Activity {
         if (!isTaskRoot() && launch != null && Intent.ACTION_MAIN.equals(launch.getAction())
                 && launch.hasCategory(Intent.CATEGORY_LAUNCHER)) {
             finish();
+            return;
+        }
+        // A finished game left this process behind and Android reused it. The
+        // game's native state cannot start twice in one process (missing menus),
+        // so restart into a fresh process before going any further.
+        if (GameActivity.gamesInProcess > 0 && !GameActivity.running) {
+            startActivity(new Intent(this, MainActivity.class)
+                    .putExtra(EXTRA_RESTARTED, true)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+            android.os.Process.killProcess(android.os.Process.myPid());
             return;
         }
         TextView status = new TextView(this);
@@ -29,7 +40,8 @@ public class MainActivity extends Activity {
                 prepareData();
                 runOnUiThread(() -> {
                     if (isFinishing() || isDestroyed()) return;
-                    startActivity(new Intent(this, GameActivity.class));
+                    startActivity(new Intent(this, GameActivity.class).putExtra(EXTRA_RESTARTED,
+                            getIntent() != null && getIntent().getBooleanExtra(EXTRA_RESTARTED, false)));
                     finish();
                 });
             } catch (IOException ex) {

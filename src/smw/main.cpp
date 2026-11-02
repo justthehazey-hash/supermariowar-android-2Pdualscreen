@@ -66,6 +66,7 @@
 
 #ifdef __ANDROID__
 #include <jni.h>
+#include <unistd.h> // _exit
 #endif
 
 #ifdef _MSC_VER
@@ -469,6 +470,16 @@ void main_game()
 
 
     printf("\n---------------- shutdown ----------------\n");
+
+#ifdef __ANDROID__
+    // Android keeps the process alive after the game ends and may hand it to the
+    // next launch, where this game's static state (menus referencing freed
+    // graphics) breaks it. Settings were saved by the Exit menu already, so end
+    // the process right here instead of tearing SDL down and waiting on Android.
+    fflush(stdout);
+    fflush(stderr);
+    _exit(0);
+#endif
 
     for (short i = 0; i < GAMEMODE_LAST; i++)
         delete gamemodes[i];
