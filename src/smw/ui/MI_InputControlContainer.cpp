@@ -17,6 +17,7 @@ extern CGameValues game_values;
 extern CResourceManager* rm;
 
 extern int joystickcount;
+extern SDL_Joystick** joysticks;
 
 
 namespace {
@@ -351,7 +352,10 @@ MI_InputControlContainer::MI_InputControlContainer(gfxSprite * spr_button, short
     miDeviceSelectField->add("Keyboard", -1);
 
     for (int iJoystick = 0; iJoystick < joystickcount; iJoystick++) {
-        miDeviceSelectField->add(SDL_GetJoystickNameForID(iJoystick), iJoystick, false);
+        // A joystick may have no name (or have failed to open): never pass null on.
+        const char* name = joysticks[iJoystick] ? SDL_GetJoystickName(joysticks[iJoystick]) : nullptr;
+        std::string label = name && *name ? name : "Joystick " + std::to_string(iJoystick + 1);
+        miDeviceSelectField->add(label, iJoystick, false);
     }
 
     //If the device is not found, default to the keyboard

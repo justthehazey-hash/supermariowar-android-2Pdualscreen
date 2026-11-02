@@ -3,3 +3,5 @@
 #include "GameValues.h"
 
 CGameValues game_values;
+SDL_Joystick** joysticks = nullptr;
+int joystickcount = 0;

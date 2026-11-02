@@ -57,8 +57,16 @@ void writeBacktrace()
     _Unwind_Backtrace(recordFrame, &trace);
 }
 
+volatile sig_atomic_t crashing = 0;
+
 void onCrash(int signal, siginfo_t* info, void*)
 {
+    // Android's runtime chains signal handlers and may call this again while
+    // re-raising: report once, then leave.
+    if (crashing)
+        _exit(128 + signal);
+    crashing = 1;
+
     char header[160];
     snprintf(header, sizeof header, "\n*** CRASH signal %d (%s) fault address %p\n",
         signal, strsignal(signal), info ? info->si_addr : nullptr);
@@ -68,8 +76,13 @@ void onCrash(int signal, siginfo_t* info, void*)
     writeBacktrace();
     writeRaw("*** END\n");
     fsync(logFd);
-    // SA_RESETHAND restored the default action: re-raise so Android records it too.
+    // Hand the signal back to the default action so Android records it too.
+    struct sigaction fallback {};
+    fallback.sa_handler = SIG_DFL;
+    sigemptyset(&fallback.sa_mask);
+    sigaction(signal, &fallback, nullptr);
     raise(signal);
+    _exit(128 + signal);
 }
 
 [[noreturn]] void onTerminate()

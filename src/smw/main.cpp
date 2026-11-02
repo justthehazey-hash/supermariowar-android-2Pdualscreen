@@ -248,11 +248,16 @@ void create_globals()
 
 void init_joysticks()
 {
-    SDL_GetJoysticks(&joystickcount);
+    // SDL3 identifies joysticks by instance ID, not by position: open each
+    // listed ID. The game keeps referring to them by position (0..count-1).
+    SDL_JoystickID* ids = SDL_GetJoysticks(&joystickcount);
+    if (!ids)
+        joystickcount = 0;
     joysticks = new SDL_Joystick*[joystickcount];
 
     for (int i = 0; i < joystickcount; i++)
-        joysticks[i] = SDL_OpenJoystick(i);
+        joysticks[i] = SDL_OpenJoystick(ids[i]);
+    SDL_free(ids);
 
     SDL_SetJoystickEventsEnabled(true);
 

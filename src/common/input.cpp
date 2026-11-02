@@ -7,7 +7,19 @@
 
 extern CGameValues game_values;
 
+extern int joystickcount;
+extern SDL_Joystick** joysticks;
+
 namespace {
+// Players store a joystick by position (0..count-1); SDL3 events carry the
+// joystick's instance ID. 0 is never a valid instance ID.
+SDL_JoystickID joystickIdForDevice(int device)
+{
+    if (device < 0 || device >= joystickcount || !joysticks || !joysticks[device])
+        return 0;
+    return SDL_GetJoystickID(joysticks[device]);
+}
+
 // Intentional cast from -1 as a keyboard sentinel
 constexpr SDL_JoystickID KEYBOARD_DEVICE_ID = static_cast<SDL_JoystickID>(DEVICE_KEYBOARD);
 std::atomic<Uint32> padEventType {0};
@@ -236,6 +248,8 @@ void CPlayerInput::Update(SDL_Event event, short iGameState)
 			outputControl = &outputControls[iPlayer];
 			iDeviceID = inputControls[iPlayer]->iDevice;
 		}
+		if (iDeviceID != KEYBOARD_DEVICE_ID)
+			iDeviceID = joystickIdForDevice(static_cast<short>(iDeviceID));
 
         if (iDeviceID == KEYBOARD_DEVICE_ID) {
             if (SDL_EVENT_KEY_DOWN == event.type) {

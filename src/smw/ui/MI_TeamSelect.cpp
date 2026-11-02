@@ -10,6 +10,8 @@
 
 extern CGameValues game_values;
 extern CResourceManager* rm;
+extern int joystickcount;
+extern SDL_Joystick** joysticks;
 
 extern SkinList *skinlist;
 
@@ -219,7 +221,9 @@ MenuCodeEnum MI_TeamSelect::SendInput(CPlayerInput * playerInput)
         }
         if (DEVICE_KEYBOARD != playerInput->inputControls[iPlayer]->iDevice) {
             short team = GetTeam(iPlayer);
-            gfx_setjoystickteamcolor(SDL_GetJoystickFromPlayerIndex(playerInput->inputControls[iPlayer]->iDevice), team, fReady[iPlayer] ? 1.0 : 0.5);
+            const short device = playerInput->inputControls[iPlayer]->iDevice;
+            if (device >= 0 && device < joystickcount && joysticks[device])
+                gfx_setjoystickteamcolor(joysticks[device], team, fReady[iPlayer] ? 1.0 : 0.5);
         }
     }
 
