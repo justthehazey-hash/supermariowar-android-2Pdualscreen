@@ -982,6 +982,10 @@ void MenuState::update()
                 }
             }
         } else if (MENU_CODE_MENU_GRAPHICS_PACK_CHANGED == code) {
+            //Reload everything the pack provides, including the backdrop, logo and
+            //fonts (loaded once at startup), so the shade below is applied to a
+            //fresh backdrop instead of darkening the old one again on every change.
+            rm->loadStartGraphics();
             rm->loadMenuGraphics();
 
             blitdest = rm->menu_backdrop.getSurface();

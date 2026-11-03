@@ -50,7 +50,8 @@ void MI_Button::Draw()
         case TextAlign::LEFT: {
             // Start where the pipe body starts, past the 26px end cap; on a
             // button too narrow for that, center the text instead.
-            const short iContentW = iTextW + (iImageW > 0 ? iImageW + 2 : 0);
+            // Measured here: the menu font changes with the menu graphics pack.
+            const short iContentW = rm->menu_font_large.getWidth(szName) + (iImageW > 0 ? iImageW + 2 : 0);
             const short iInset = std::max<short>(0, std::min<short>(26, (iWidth - iContentW) / 2));
             rm->menu_font_large.drawChopRight(m_pos.x + iInset + (iImageW > 0 ? iImageW + 2 : 0), m_pos.y + 5, iWidth - 2 * iInset, szName.c_str());
             if (sprImage)
