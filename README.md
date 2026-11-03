@@ -1,3 +1,7 @@
+> **This is an Android build of Super Mario War** with full controller support (AYN Odin 2 Portal built-in controls, up to 4 Bluetooth/USB controllers), RetroArch CRT filters and menu fixes.
+> **Download the APK from [Releases](https://github.com/justthehazey-hash/supermariowar-android-2Pdualscreen/releases/latest)**; controls and options are in the [Android guide](docs/android.md).
+> The rest of this page is the original Super Mario War readme.
+
 ![In-game screenshots](docs/gfx/screenshots.png)
 
 # Super Mario War

@@ -1,0 +1,63 @@
+name: Publish release
+# Publishes an Android APK that was already built (and tested) as a GitHub release:
+# Actions -> Publish release -> Run workflow, with the tag and the build's run ID
+# (the number at the end of the build's URL). The exact tested APK is published,
+# not a rebuild. Release notes come from docs/releases/<tag>.md when it exists.
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release version tag, e.g. v1.1
+        required: true
+      run_id:
+        description: Run ID of the "Android APK" build to publish
+        required: true
+
+permissions:
+  contents: write   # create the release
+  actions: read     # download the build's files
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+          RUN_ID: ${{ inputs.run_id }}
+        run: |
+          set -euo pipefail
+          fail() { echo "::error title=Release::$1"; exit 1; }
+          case "$TAG" in v[0-9]*) ;; *) fail "Tag must look like v1.0 (got '$TAG')";; esac
+          gh release view "$TAG" > /dev/null 2>&1 && fail "Release $TAG already exists"
+
+          info=$(gh run view "$RUN_ID" --json workflowName,conclusion,headSha,headBranch) \
+            || fail "No build with run ID $RUN_ID"
+          [ "$(jq -r .workflowName <<<"$info")" = "Android APK" ] || fail "Run $RUN_ID is not an Android APK build"
+          [ "$(jq -r .conclusion <<<"$info")" = "success" ] || fail "Run $RUN_ID did not succeed"
+          sha=$(jq -r .headSha <<<"$info")
+
+          mkdir -p out
+          gh run download "$RUN_ID" -n supermariowar-android-controllers -D apk || fail "Run $RUN_ID has no APK"
+          cp apk/app-debug.apk "out/SuperMarioWar-Android-$TAG.apk"
+
+          # Crash-report symbols: an artifact of the build, or (older builds) a symbols-<sha> pre-release.
+          if gh run download "$RUN_ID" -n debug-symbols -D sym 2> /dev/null; then
+            cp sym/*.tar.gz "out/SuperMarioWar-Android-$TAG-debug-symbols.tar.gz"
+          elif gh release download "symbols-${sha::7}" -D sym 2> /dev/null; then
+            cp sym/*.tar.gz "out/SuperMarioWar-Android-$TAG-debug-symbols.tar.gz"
+          else
+            echo "::warning::No debug symbols found for run $RUN_ID"
+          fi
+
+          notes="docs/releases/$TAG.md"
+          if [ ! -f "$notes" ]; then
+            notes=/tmp/notes.md
+            printf 'Android build of commit %s.\n\nInstall `SuperMarioWar-Android-%s.apk` on the device.\n' "${sha::7}" "$TAG" > "$notes"
+          fi
+          gh release create "$TAG" out/* --target "$sha" --title "Super Mario War for Android $TAG" \
+            --notes-file "$notes" --latest
+          echo "Published $TAG from run $RUN_ID (commit ${sha::7})"

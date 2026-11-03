@@ -13,7 +13,11 @@ ANDROID_HOME=/path/to/android-sdk ./android/build.sh
 ```
 
 The APK is written to `android/app/build/outputs/apk/debug/app-debug.apk`.
-Every push to the repository also builds it on GitHub Actions (see the Actions tab).
+Every push to the repository also builds it on GitHub Actions (see the Actions tab); the
+APK and its debug symbols are kept with each build for testing. A tested build becomes a
+public release with **Actions -> Publish release -> Run workflow**: give it a tag (`v1.1`)
+and the build's run ID (the number at the end of the build's URL). Release notes are read
+from `docs/releases/<tag>.md` if that file exists.
 
 `build.sh` cross-compiles the game, SDL3, SDL3_image and SDL3_mixer with the NDK, then
 assembles the app with Gradle. SDL's Android Java layer and its native library come from
