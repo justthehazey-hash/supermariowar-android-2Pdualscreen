@@ -14,21 +14,21 @@ extern CGameValues game_values;
 UI_TeamOptionsMenu::UI_TeamOptionsMenu()
     : UI_Menu()
 {
-    miTeamKillsField = new MI_SelectField<TeamCollisionStyle>(&rm->spr_selectfield, 70, 180, "Player Collision", 500, 220);
+    miTeamKillsField = new MI_SelectField<TeamCollisionStyle>(&rm->spr_selectfield, 70, 180, "Player Collision", 500, 230);
     miTeamKillsField->add("Off", TeamCollisionStyle::Off);
     miTeamKillsField->add("Assist", TeamCollisionStyle::Assist);
     miTeamKillsField->add("On", TeamCollisionStyle::On);
     miTeamKillsField->setOutputPtr(&game_values.teamcollision);
     miTeamKillsField->setCurrentValue(game_values.teamcollision);
 
-    miTeamColorsField = new MI_SelectField<bool>(&rm->spr_selectfield, 70, 220, "Colors", 500, 220);
+    miTeamColorsField = new MI_SelectField<bool>(&rm->spr_selectfield, 70, 220, "Colors", 500, 230);
     miTeamColorsField->add("Individual", false);
     miTeamColorsField->add("Team", true);
     miTeamColorsField->setOutputPtr(&game_values.teamcolors);
     miTeamColorsField->setCurrentValue(game_values.teamcolors ? 1 : 0);
     miTeamColorsField->setAutoAdvance(true);
 
-    miTournamentControlField = new MI_SelectField<TournamentControlStyle>(&rm->spr_selectfield, 70, 260, "Tournament Control", 500, 220);
+    miTournamentControlField = new MI_SelectField<TournamentControlStyle>(&rm->spr_selectfield, 70, 260, "Tournament Control", 500, 230);
     miTournamentControlField->add("All", TournamentControlStyle::All);
     miTournamentControlField->add("Game Winner", TournamentControlStyle::GameWinner);
     miTournamentControlField->add("Game Loser", TournamentControlStyle::GameLoser);
@@ -40,7 +40,7 @@ UI_TeamOptionsMenu::UI_TeamOptionsMenu()
     miTournamentControlField->setOutputPtr(&game_values.tournamentcontrolstyle);
     miTournamentControlField->setCurrentValue(game_values.tournamentcontrolstyle);
 
-    miTeamOptionsMenuBackButton = new MI_Button(&rm->spr_selectfield, 544, 432, "Back", 80, TextAlign::CENTER);
+    miTeamOptionsMenuBackButton = new MI_Button(&rm->spr_selectfield, 524, 432, "Back", 100, TextAlign::CENTER);
     miTeamOptionsMenuBackButton->SetCode(MENU_CODE_BACK_TO_OPTIONS_MENU);
 
     miTeamOptionsMenuLeftHeaderBar = new MI_Image(&rm->menu_plain_field, 0, 0, 0, 0, 320, 32, 1, 1, 0);

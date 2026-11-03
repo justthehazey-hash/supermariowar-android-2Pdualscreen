@@ -45,18 +45,20 @@ UI_OptionsMenu::UI_OptionsMenu()
     miGenerateMapThumbsButton = new MI_Button(&rm->spr_selectfield, 120, 400, "Refresh Maps", 400, TextAlign::CENTER);
     miGenerateMapThumbsButton->SetCode(MENU_CODE_SAVE_ALL_MAP_THUMBNAILS);
 
-    miOptionsMenuBackButton = new MI_Button(&rm->spr_selectfield, 544, 432, "Back", 80, TextAlign::CENTER);
+    miOptionsMenuBackButton = new MI_Button(&rm->spr_selectfield, 524, 432, "Back", 100, TextAlign::CENTER);
     miOptionsMenuBackButton->SetCode(MENU_CODE_TO_MAIN_MENU);
 
     miOptionsMenuLeftHeaderBar = new MI_Image(&rm->menu_plain_field, 0, 0, 0, 0, 320, 32, 1, 1, 0);
     miOptionsMenuRightHeaderBar = new MI_Image(&rm->menu_plain_field, 320, 0, 192, 0, 320, 32, 1, 1, 0);
     miOptionsMenuHeaderText = new MI_HeaderText("Options Menu", 320, 5);
 
-    miGenerateThumbsDialogImage = new MI_Image(&rm->spr_dialog, 224, 176, 0, 0, 192, 128, 1, 1, 0);
+    miGenerateThumbsDialogImage = new MI_Image(&rm->spr_dialog, 200, 176, 0, 0, 192, 128, 1, 1, 0);
+
+    miGenerateThumbsDialogImage->SetDrawWidth(240);  // room for 100-wide Yes / No buttons
     miGenerateThumbsDialogAreYouText = new MI_HeaderText("Are You", 320, 195);
     miGenerateThumbsDialogSureText = new MI_HeaderText("Sure?", 320, 220);
-    miGenerateThumbsDialogYesButton = new MI_Button(&rm->spr_selectfield, 235, 250, "Yes", 80, TextAlign::CENTER);
-    miGenerateThumbsDialogNoButton = new MI_Button(&rm->spr_selectfield, 325, 250, "No", 80, TextAlign::CENTER);
+    miGenerateThumbsDialogYesButton = new MI_Button(&rm->spr_selectfield, 215, 250, "Yes", 100, TextAlign::CENTER);
+    miGenerateThumbsDialogNoButton = new MI_Button(&rm->spr_selectfield, 325, 250, "No", 100, TextAlign::CENTER);
 
     miGenerateThumbsDialogYesButton->SetCode(MENU_CODE_GENERATE_THUMBS_RESET_YES);
     miGenerateThumbsDialogNoButton->SetCode(MENU_CODE_GENERATE_THUMBS_RESET_NO);

@@ -16,10 +16,10 @@ UI_MainMenu::UI_MainMenu()
         0, 0, rm->menu_version.getWidth(), rm->menu_version.getHeight(), 1, 1, 0);
     // miSMWVersionText = new MI_Text("Beta 2", 630, 45, 0, 2, 2);
 
-    miMainStartButton = new MI_Button(&rm->spr_selectfield, 120, 210, "Start", 310);
+    miMainStartButton = new MI_Button(&rm->spr_selectfield, 120, 210, "Start", 300);
     miMainStartButton->SetCode(MENU_CODE_TO_MATCH_SELECTION_MENU);
 
-    miQuickGameButton = new MI_Button(&rm->spr_selectfield, 440, 210, "Go!", 80);
+    miQuickGameButton = new MI_Button(&rm->spr_selectfield, 430, 210, "Go!", 90);
     miQuickGameButton->SetCode(MENU_CODE_QUICK_GAME_START);
 
     miPlayerSelect = new MI_PlayerSelect(&rm->menu_player_select, 120, 250, "Players", 400, 140);

@@ -154,6 +154,7 @@ void CGameValues::init()
     framelimiter    = WAITTIME;
     videofilter     = 0;
     crtresolution   = 0;
+    menudim         = 30;
     sound       = true;
     music       = true;
     appstate     = AppState::Splash;

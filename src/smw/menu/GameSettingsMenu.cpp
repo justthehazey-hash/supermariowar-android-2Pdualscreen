@@ -104,11 +104,12 @@ UI_GameSettingsMenu::UI_GameSettingsMenu()
 
 
     // Exit tournament dialog box
-    miGameSettingsExitDialogImage = new MI_Image(&rm->spr_dialog, 224, 176, 0, 0, 192, 128, 1, 1, 0);
+    miGameSettingsExitDialogImage = new MI_Image(&rm->spr_dialog, 200, 176, 0, 0, 192, 128, 1, 1, 0);
+    miGameSettingsExitDialogImage->SetDrawWidth(240);  // room for 100-wide Yes / No buttons
     miGameSettingsExitDialogExitText = new MI_HeaderText("Exit", 320, 195);
     miGameSettingsExitDialogTournamentText = new MI_HeaderText("Tournament", 320, 220);
-    miGameSettingsExitDialogYesButton = new MI_Button(&rm->spr_selectfield, 235, 250, "Yes", 80, TextAlign::CENTER);
-    miGameSettingsExitDialogNoButton = new MI_Button(&rm->spr_selectfield, 325, 250, "No", 80, TextAlign::CENTER);
+    miGameSettingsExitDialogYesButton = new MI_Button(&rm->spr_selectfield, 215, 250, "Yes", 100, TextAlign::CENTER);
+    miGameSettingsExitDialogNoButton = new MI_Button(&rm->spr_selectfield, 325, 250, "No", 100, TextAlign::CENTER);
 
     miGameSettingsExitDialogYesButton->SetCode(MENU_CODE_EXIT_TOURNAMENT_YES);
     miGameSettingsExitDialogNoButton->SetCode(MENU_CODE_EXIT_TOURNAMENT_NO);

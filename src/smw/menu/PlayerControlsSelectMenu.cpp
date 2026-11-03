@@ -22,7 +22,7 @@ UI_PlayerControlsSelectMenu::UI_PlayerControlsSelectMenu()
     miPlayer4ControlsButton = new MI_Button(&rm->spr_selectfield, 120, 260, "Player 4", 400, TextAlign::CENTER);
     miPlayer4ControlsButton->SetCode(MENU_CODE_TO_PLAYER_4_CONTROLS);
 
-    miPlayerControlsBackButton = new MI_Button(&rm->spr_selectfield, 544, 432, "Back", 80, TextAlign::CENTER);
+    miPlayerControlsBackButton = new MI_Button(&rm->spr_selectfield, 524, 432, "Back", 100, TextAlign::CENTER);
     miPlayerControlsBackButton->SetCode(MENU_CODE_TO_MAIN_MENU);
 
     miPlayerControlsLeftHeaderBar = new MI_Image(&rm->menu_plain_field, 0, 0, 0, 0, 320, 32, 1, 1, 0);

@@ -33,7 +33,7 @@ UI_ModeOptionsMenu::UI_ModeOptionsMenu()
     miClassicModeScoringField->setOutputPtr(&game_values.gamemodemenusettings.classic.scoring);
     miClassicModeScoringField->setCurrentValue(game_values.gamemodemenusettings.classic.scoring);
 
-    miClassicModeBackButton = new MI_Button(&rm->spr_selectfield, 544, 432, "Back", 80, TextAlign::CENTER);
+    miClassicModeBackButton = new MI_Button(&rm->spr_selectfield, 524, 432, "Back", 100, TextAlign::CENTER);
     miClassicModeBackButton->SetCode(MENU_CODE_BACK_TO_GAME_SETUP_MENU_FROM_MODE_SETTINGS);
 
     miClassicModeLeftHeaderBar = new MI_Image(&rm->menu_plain_field, 0, 0, 0, 0, 320, 32, 1, 1, 0);
@@ -68,7 +68,7 @@ UI_ModeOptionsMenu::UI_ModeOptionsMenu()
     miFragModeScoringField->setOutputPtr(&game_values.gamemodemenusettings.frag.scoring);
     miFragModeScoringField->setCurrentValue(game_values.gamemodemenusettings.frag.scoring);
 
-    miFragModeBackButton = new MI_Button(&rm->spr_selectfield, 544, 432, "Back", 80, TextAlign::CENTER);
+    miFragModeBackButton = new MI_Button(&rm->spr_selectfield, 524, 432, "Back", 100, TextAlign::CENTER);
     miFragModeBackButton->SetCode(MENU_CODE_BACK_TO_GAME_SETUP_MENU_FROM_MODE_SETTINGS);
 
     miFragModeLeftHeaderBar = new MI_Image(&rm->menu_plain_field, 0, 0, 0, 0, 320, 32, 1, 1, 0);
@@ -91,19 +91,19 @@ UI_ModeOptionsMenu::UI_ModeOptionsMenu()
     // Time Limit Mode Settings
     //***********************
 
-    miTimeLimitModeStyleField = new MI_SelectField<DeathStyle>(&rm->spr_selectfield, 120, 180, "On Kill", 400, 150);
+    miTimeLimitModeStyleField = new MI_SelectField<DeathStyle>(&rm->spr_selectfield, 120, 180, "On Kill", 400, 160);
     miTimeLimitModeStyleField->add("Respawn", DeathStyle::Respawn);
     miTimeLimitModeStyleField->add("Shield", DeathStyle::Shield);
     miTimeLimitModeStyleField->setOutputPtr(&game_values.gamemodemenusettings.time.style);
     miTimeLimitModeStyleField->setCurrentValue(game_values.gamemodemenusettings.time.style);
 
-    miTimeLimitModeScoringField = new MI_SelectField<ScoringStyle>(&rm->spr_selectfield, 120, 220, "Scoring", 400, 150);
+    miTimeLimitModeScoringField = new MI_SelectField<ScoringStyle>(&rm->spr_selectfield, 120, 220, "Scoring", 400, 160);
     miTimeLimitModeScoringField->add("All Kills", ScoringStyle::AllKills);
     miTimeLimitModeScoringField->add("Push Kills Only", ScoringStyle::PushOnly, false);
     miTimeLimitModeScoringField->setOutputPtr(&game_values.gamemodemenusettings.time.scoring);
     miTimeLimitModeScoringField->setCurrentValue(game_values.gamemodemenusettings.time.scoring);
 
-    miTimeLimitModePercentExtraTime = new MI_SliderField(&rm->spr_selectfield, &rm->menu_slider_bar, 120, 260, "Extra Time", 400, 150, 384);
+    miTimeLimitModePercentExtraTime = new MI_SliderField(&rm->spr_selectfield, &rm->menu_slider_bar, 120, 260, "Extra Time", 400, 160, 384);
     miTimeLimitModePercentExtraTime->add("0", 0, false);
     miTimeLimitModePercentExtraTime->add("5", 5, false);
     miTimeLimitModePercentExtraTime->add("10", 10);
@@ -129,7 +129,7 @@ UI_ModeOptionsMenu::UI_ModeOptionsMenu()
     miTimeLimitModePercentExtraTime->setCurrentValue(game_values.gamemodemenusettings.time.percentextratime);
     miTimeLimitModePercentExtraTime->allowWrap(false);
 
-    miTimeLimitModeBackButton = new MI_Button(&rm->spr_selectfield, 544, 432, "Back", 80, TextAlign::CENTER);
+    miTimeLimitModeBackButton = new MI_Button(&rm->spr_selectfield, 524, 432, "Back", 100, TextAlign::CENTER);
     miTimeLimitModeBackButton->SetCode(MENU_CODE_BACK_TO_GAME_SETUP_MENU_FROM_MODE_SETTINGS);
 
     miTimeLimitModeLeftHeaderBar = new MI_Image(&rm->menu_plain_field, 0, 0, 0, 0, 320, 32, 1, 1, 0);
@@ -153,14 +153,14 @@ UI_ModeOptionsMenu::UI_ModeOptionsMenu()
     // Jail Mode Settings
     //***********************
 
-    miJailModeStyleField = new MI_SelectField<JailStyle>(&rm->spr_selectfield, 120, 160, "Style", 400, 150);
+    miJailModeStyleField = new MI_SelectField<JailStyle>(&rm->spr_selectfield, 120, 160, "Style", 400, 160);
     miJailModeStyleField->add("Classic", JailStyle::Classic);
     miJailModeStyleField->add("Owned", JailStyle::Owned);
     miJailModeStyleField->add("Free For All", JailStyle::FreeForAll);
     miJailModeStyleField->setOutputPtr(&game_values.gamemodemenusettings.jail.style);
     miJailModeStyleField->setCurrentValue(game_values.gamemodemenusettings.jail.style);
 
-    miJailModeTimeFreeField = new MI_SelectField<short>(&rm->spr_selectfield, 120, 200, "Free Timer", 400, 150);
+    miJailModeTimeFreeField = new MI_SelectField<short>(&rm->spr_selectfield, 120, 200, "Free Timer", 400, 160);
     miJailModeTimeFreeField->add("None", 1);
     miJailModeTimeFreeField->add("5 Seconds", 310, false);
     miJailModeTimeFreeField->add("10 Seconds", 620);
@@ -177,14 +177,14 @@ UI_ModeOptionsMenu::UI_ModeOptionsMenu()
     miJailModeTimeFreeField->setOutputPtr(&game_values.gamemodemenusettings.jail.timetofree);
     miJailModeTimeFreeField->setCurrentValue(game_values.gamemodemenusettings.jail.timetofree);
 
-    miJailModeTagFreeField = new MI_SelectField<bool>(&rm->spr_selectfield, 120, 240, "Tag Free", 400, 150);
+    miJailModeTagFreeField = new MI_SelectField<bool>(&rm->spr_selectfield, 120, 240, "Tag Free", 400, 160);
     miJailModeTagFreeField->add("Off", false);
     miJailModeTagFreeField->add("On", true);
     miJailModeTagFreeField->setOutputPtr(&game_values.gamemodemenusettings.jail.tagfree);
     miJailModeTagFreeField->setCurrentValue(game_values.gamemodemenusettings.jail.tagfree ? 1 : 0);
     miJailModeTagFreeField->setAutoAdvance(true);
 
-    miJailModeJailKeyField = new MI_SliderField(&rm->spr_selectfield, &rm->menu_slider_bar, 120, 280, "Jail Key", 400, 150, 384);
+    miJailModeJailKeyField = new MI_SliderField(&rm->spr_selectfield, &rm->menu_slider_bar, 120, 280, "Jail Key", 400, 160, 384);
     miJailModeJailKeyField->add("0", 0, false);
     miJailModeJailKeyField->add("5", 5, false);
     miJailModeJailKeyField->add("10", 10);
@@ -210,7 +210,7 @@ UI_ModeOptionsMenu::UI_ModeOptionsMenu()
     miJailModeJailKeyField->setCurrentValue(game_values.gamemodemenusettings.jail.percentkey);
     miJailModeJailKeyField->allowWrap(false);
 
-    miJailModeBackButton = new MI_Button(&rm->spr_selectfield, 544, 432, "Back", 80, TextAlign::CENTER);
+    miJailModeBackButton = new MI_Button(&rm->spr_selectfield, 524, 432, "Back", 100, TextAlign::CENTER);
     miJailModeBackButton->SetCode(MENU_CODE_BACK_TO_GAME_SETUP_MENU_FROM_MODE_SETTINGS);
 
     miJailModeLeftHeaderBar = new MI_Image(&rm->menu_plain_field, 0, 0, 0, 0, 320, 32, 1, 1, 0);
@@ -235,14 +235,14 @@ UI_ModeOptionsMenu::UI_ModeOptionsMenu()
     // Coins Mode Settings
     //***********************
 
-    miCoinModePenaltyField = new MI_SelectField<bool>(&rm->spr_selectfield, 120, 180, "Penalty", 400, 150);
+    miCoinModePenaltyField = new MI_SelectField<bool>(&rm->spr_selectfield, 120, 180, "Penalty", 400, 160);
     miCoinModePenaltyField->add("Off", false);
     miCoinModePenaltyField->add("On", true);
     miCoinModePenaltyField->setOutputPtr(&game_values.gamemodemenusettings.coins.penalty);
     miCoinModePenaltyField->setCurrentValue(game_values.gamemodemenusettings.coins.penalty ? 1 : 0);
     miCoinModePenaltyField->setAutoAdvance(true);
 
-    miCoinModeQuantityField = new MI_SelectField<short>(&rm->spr_selectfield, 120, 220, "Quantity", 400, 150);
+    miCoinModeQuantityField = new MI_SelectField<short>(&rm->spr_selectfield, 120, 220, "Quantity", 400, 160);
     miCoinModeQuantityField->add("1", 1);
     miCoinModeQuantityField->add("2", 2);
     miCoinModeQuantityField->add("3", 3);
@@ -256,7 +256,7 @@ UI_ModeOptionsMenu::UI_ModeOptionsMenu()
     miCoinModeQuantityField->setOutputPtr(&game_values.gamemodemenusettings.coins.quantity);
     miCoinModeQuantityField->setCurrentValue(game_values.gamemodemenusettings.coins.quantity);
 
-    miCoinModePercentExtraCoin = new MI_SliderField(&rm->spr_selectfield, &rm->menu_slider_bar, 120, 260, "Extra Coins", 400, 150, 384);
+    miCoinModePercentExtraCoin = new MI_SliderField(&rm->spr_selectfield, &rm->menu_slider_bar, 120, 260, "Extra Coins", 400, 160, 384);
     miCoinModePercentExtraCoin->add("0", 0, false);
     miCoinModePercentExtraCoin->add("5", 5, false);
     miCoinModePercentExtraCoin->add("10", 10);
@@ -282,7 +282,7 @@ UI_ModeOptionsMenu::UI_ModeOptionsMenu()
     miCoinModePercentExtraCoin->setCurrentValue(game_values.gamemodemenusettings.coins.percentextracoin);
     miCoinModePercentExtraCoin->allowWrap(false);
 
-    miCoinModeBackButton = new MI_Button(&rm->spr_selectfield, 544, 432, "Back", 80, TextAlign::CENTER);
+    miCoinModeBackButton = new MI_Button(&rm->spr_selectfield, 524, 432, "Back", 100, TextAlign::CENTER);
     miCoinModeBackButton->SetCode(MENU_CODE_BACK_TO_GAME_SETUP_MENU_FROM_MODE_SETTINGS);
 
     miCoinModeLeftHeaderBar = new MI_Image(&rm->menu_plain_field, 0, 0, 0, 0, 320, 32, 1, 1, 0);
@@ -335,7 +335,7 @@ UI_ModeOptionsMenu::UI_ModeOptionsMenu()
         miStompModeEnemySlider[iEnemy]->setCurrentValue(game_values.gamemodemenusettings.stomp.enemyweight[iEnemy]);
     }
 
-    miStompModeBackButton = new MI_Button(&rm->spr_selectfield, 544, 432, "Back", 80, TextAlign::CENTER);
+    miStompModeBackButton = new MI_Button(&rm->spr_selectfield, 524, 432, "Back", 100, TextAlign::CENTER);
     miStompModeBackButton->SetCode(MENU_CODE_BACK_TO_GAME_SETUP_MENU_FROM_MODE_SETTINGS);
 
     miStompModeLeftHeaderBar = new MI_Image(&rm->menu_plain_field, 0, 0, 0, 0, 320, 32, 1, 1, 0);
@@ -404,7 +404,7 @@ UI_ModeOptionsMenu::UI_ModeOptionsMenu()
     miEggModeExplosionTimeField->setOutputPtr(&game_values.gamemodemenusettings.egg.explode);
     miEggModeExplosionTimeField->setCurrentValue(game_values.gamemodemenusettings.egg.explode);
 
-    miEggModeBackButton = new MI_Button(&rm->spr_selectfield, 544, 432, "Back", 80, TextAlign::CENTER);
+    miEggModeBackButton = new MI_Button(&rm->spr_selectfield, 524, 432, "Back", 100, TextAlign::CENTER);
     miEggModeBackButton->SetCode(MENU_CODE_BACK_TO_GAME_SETUP_MENU_FROM_MODE_SETTINGS);
 
     miEggModeLeftHeaderBar = new MI_Image(&rm->menu_plain_field, 0, 0, 0, 0, 320, 32, 1, 1, 0);
@@ -496,7 +496,7 @@ UI_ModeOptionsMenu::UI_ModeOptionsMenu()
     miFlagModeCenterFlagField->setCurrentValue(game_values.gamemodemenusettings.flag.centerflag ? 1 : 0);
     miFlagModeCenterFlagField->setAutoAdvance(true);
 
-    miFlagModeBackButton = new MI_Button(&rm->spr_selectfield, 544, 432, "Back", 80, TextAlign::CENTER);
+    miFlagModeBackButton = new MI_Button(&rm->spr_selectfield, 524, 432, "Back", 100, TextAlign::CENTER);
     miFlagModeBackButton->SetCode(MENU_CODE_BACK_TO_GAME_SETUP_MENU_FROM_MODE_SETTINGS);
 
     miFlagModeLeftHeaderBar = new MI_Image(&rm->menu_plain_field, 0, 0, 0, 0, 320, 32, 1, 1, 0);
@@ -538,7 +538,7 @@ UI_ModeOptionsMenu::UI_ModeOptionsMenu()
     miChickenModeGlideField->setCurrentValue(game_values.gamemodemenusettings.chicken.glide ? 1 : 0);
     miChickenModeGlideField->setAutoAdvance(true);
 
-    miChickenModeBackButton = new MI_Button(&rm->spr_selectfield, 544, 432, "Back", 80, TextAlign::CENTER);
+    miChickenModeBackButton = new MI_Button(&rm->spr_selectfield, 524, 432, "Back", 100, TextAlign::CENTER);
     miChickenModeBackButton->SetCode(MENU_CODE_BACK_TO_GAME_SETUP_MENU_FROM_MODE_SETTINGS);
 
     miChickenModeLeftHeaderBar = new MI_Image(&rm->menu_plain_field, 0, 0, 0, 0, 320, 32, 1, 1, 0);
@@ -569,7 +569,7 @@ UI_ModeOptionsMenu::UI_ModeOptionsMenu()
     miTagModeTagOnTouchField->setCurrentValue(game_values.gamemodemenusettings.tag.tagontouch ? 1 : 0);
     miTagModeTagOnTouchField->setAutoAdvance(true);
 
-    miTagModeBackButton = new MI_Button(&rm->spr_selectfield, 544, 432, "Back", 80, TextAlign::CENTER);
+    miTagModeBackButton = new MI_Button(&rm->spr_selectfield, 524, 432, "Back", 100, TextAlign::CENTER);
     miTagModeBackButton->SetCode(MENU_CODE_BACK_TO_GAME_SETUP_MENU_FROM_MODE_SETTINGS);
 
     miTagModeLeftHeaderBar = new MI_Image(&rm->menu_plain_field, 0, 0, 0, 0, 320, 32, 1, 1, 0);
@@ -592,7 +592,7 @@ UI_ModeOptionsMenu::UI_ModeOptionsMenu()
     // Star Mode Settings
     //***********************
 
-    miStarModeTimeField = new MI_SelectField<short>(&rm->spr_selectfield, 120, 180, "Time", 400, 150);
+    miStarModeTimeField = new MI_SelectField<short>(&rm->spr_selectfield, 120, 180, "Time", 400, 160);
     miStarModeTimeField->add("5 Seconds", 5, false);
     miStarModeTimeField->add("10 Seconds", 10, false);
     miStarModeTimeField->add("15 Seconds", 15);
@@ -608,7 +608,7 @@ UI_ModeOptionsMenu::UI_ModeOptionsMenu()
     miStarModeTimeField->setOutputPtr(&game_values.gamemodemenusettings.star.time);
     miStarModeTimeField->setCurrentValue(game_values.gamemodemenusettings.star.time);
 
-    miStarModeShineField = new MI_SelectField<StarStyle>(&rm->spr_selectfield, 120, 220, "Star Type", 400, 150);
+    miStarModeShineField = new MI_SelectField<StarStyle>(&rm->spr_selectfield, 120, 220, "Star Type", 400, 160);
     miStarModeShineField->add("Ztar", StarStyle::Ztar);
     miStarModeShineField->add("Shine", StarStyle::Shine);
     miStarModeShineField->add("Multi Star", StarStyle::Multi);
@@ -616,7 +616,7 @@ UI_ModeOptionsMenu::UI_ModeOptionsMenu()
     miStarModeShineField->setOutputPtr(&game_values.gamemodemenusettings.star.shine);
     miStarModeShineField->setCurrentValue(game_values.gamemodemenusettings.star.shine);
 
-    miStarModePercentExtraTime = new MI_SliderField(&rm->spr_selectfield, &rm->menu_slider_bar, 120, 260, "Extra Time", 400, 150, 384);
+    miStarModePercentExtraTime = new MI_SliderField(&rm->spr_selectfield, &rm->menu_slider_bar, 120, 260, "Extra Time", 400, 160, 384);
     miStarModePercentExtraTime->add("0", 0, false);
     miStarModePercentExtraTime->add("5", 5, false);
     miStarModePercentExtraTime->add("10", 10);
@@ -642,7 +642,7 @@ UI_ModeOptionsMenu::UI_ModeOptionsMenu()
     miStarModePercentExtraTime->setCurrentValue(game_values.gamemodemenusettings.star.percentextratime);
     miStarModePercentExtraTime->allowWrap(false);
 
-    miStarModeBackButton = new MI_Button(&rm->spr_selectfield, 544, 432, "Back", 80, TextAlign::CENTER);
+    miStarModeBackButton = new MI_Button(&rm->spr_selectfield, 524, 432, "Back", 100, TextAlign::CENTER);
     miStarModeBackButton->SetCode(MENU_CODE_BACK_TO_GAME_SETUP_MENU_FROM_MODE_SETTINGS);
 
     miStarModeLeftHeaderBar = new MI_Image(&rm->menu_plain_field, 0, 0, 0, 0, 320, 32, 1, 1, 0);
@@ -734,7 +734,7 @@ UI_ModeOptionsMenu::UI_ModeOptionsMenu()
     miDominationModeStealOnDeathField->setAutoAdvance(true);
 
 
-    miDominationModeBackButton = new MI_Button(&rm->spr_selectfield, 544, 432, "Back", 80, TextAlign::CENTER);
+    miDominationModeBackButton = new MI_Button(&rm->spr_selectfield, 524, 432, "Back", 100, TextAlign::CENTER);
     miDominationModeBackButton->SetCode(MENU_CODE_BACK_TO_GAME_SETUP_MENU_FROM_MODE_SETTINGS);
 
     miDominationModeLeftHeaderBar = new MI_Image(&rm->menu_plain_field, 0, 0, 0, 0, 320, 32, 1, 1, 0);
@@ -797,7 +797,7 @@ UI_ModeOptionsMenu::UI_ModeOptionsMenu()
     miKingOfTheHillModeMultiplierField->setOutputPtr(&game_values.gamemodemenusettings.kingofthehill.maxmultiplier);
     miKingOfTheHillModeMultiplierField->setCurrentValue(game_values.gamemodemenusettings.kingofthehill.maxmultiplier);
 
-    miKingOfTheHillModeBackButton = new MI_Button(&rm->spr_selectfield, 544, 432, "Back", 80, TextAlign::CENTER);
+    miKingOfTheHillModeBackButton = new MI_Button(&rm->spr_selectfield, 524, 432, "Back", 100, TextAlign::CENTER);
     miKingOfTheHillModeBackButton->SetCode(MENU_CODE_BACK_TO_GAME_SETUP_MENU_FROM_MODE_SETTINGS);
 
     miKingOfTheHillModeLeftHeaderBar = new MI_Image(&rm->menu_plain_field, 0, 0, 0, 0, 320, 32, 1, 1, 0);
@@ -852,7 +852,7 @@ UI_ModeOptionsMenu::UI_ModeOptionsMenu()
     miRaceModePenaltyField->setOutputPtr(&game_values.gamemodemenusettings.race.penalty);
     miRaceModePenaltyField->setCurrentValue(game_values.gamemodemenusettings.race.penalty);
 
-    miRaceModeBackButton = new MI_Button(&rm->spr_selectfield, 544, 432, "Back", 80, TextAlign::CENTER);
+    miRaceModeBackButton = new MI_Button(&rm->spr_selectfield, 524, 432, "Back", 100, TextAlign::CENTER);
     miRaceModeBackButton->SetCode(MENU_CODE_BACK_TO_GAME_SETUP_MENU_FROM_MODE_SETTINGS);
 
     miRaceModeLeftHeaderBar = new MI_Image(&rm->menu_plain_field, 0, 0, 0, 0, 320, 32, 1, 1, 0);
@@ -945,7 +945,7 @@ UI_ModeOptionsMenu::UI_ModeOptionsMenu()
     miSurvivalModeShieldField->setCurrentValue(game_values.gamemodemenusettings.survival.shield ? 1 : 0);
     miSurvivalModeShieldField->setAutoAdvance(true);
 
-    miSurvivalModeBackButton = new MI_Button(&rm->spr_selectfield, 544, 432, "Back", 80, TextAlign::CENTER);
+    miSurvivalModeBackButton = new MI_Button(&rm->spr_selectfield, 524, 432, "Back", 100, TextAlign::CENTER);
     miSurvivalModeBackButton->SetCode(MENU_CODE_BACK_TO_GAME_SETUP_MENU_FROM_MODE_SETTINGS);
 
     miSurvivalModeLeftHeaderBar = new MI_Image(&rm->menu_plain_field, 0, 0, 0, 0, 320, 32, 1, 1, 0);
@@ -971,7 +971,7 @@ UI_ModeOptionsMenu::UI_ModeOptionsMenu()
     //***********************
     // Greed Mode Settings
     //***********************
-    miGreedModeCoinLife = new MI_SelectField<short>(&rm->spr_selectfield, 120, 160, "Coin Life", 400, 150);
+    miGreedModeCoinLife = new MI_SelectField<short>(&rm->spr_selectfield, 120, 160, "Coin Life", 400, 160);
     miGreedModeCoinLife->add("1 Second", 62, false);
     miGreedModeCoinLife->add("2 Seconds", 124, false);
     miGreedModeCoinLife->add("3 Seconds", 186);
@@ -991,14 +991,14 @@ UI_ModeOptionsMenu::UI_ModeOptionsMenu()
     miGreedModeCoinLife->setOutputPtr(&game_values.gamemodemenusettings.greed.coinlife);
     miGreedModeCoinLife->setCurrentValue(game_values.gamemodemenusettings.greed.coinlife);
 
-    miGreedModeOwnCoins = new MI_SelectField<bool>(&rm->spr_selectfield, 120, 200, "Own Coins", 400, 150);
+    miGreedModeOwnCoins = new MI_SelectField<bool>(&rm->spr_selectfield, 120, 200, "Own Coins", 400, 160);
     miGreedModeOwnCoins->add("Yes", true);
     miGreedModeOwnCoins->add("No", false);
     miGreedModeOwnCoins->setOutputPtr(&game_values.gamemodemenusettings.greed.owncoins);
     miGreedModeOwnCoins->setCurrentValue(game_values.gamemodemenusettings.greed.owncoins);
     miGreedModeOwnCoins->setAutoAdvance(true);
 
-    miGreedModeMultiplier = new MI_SelectField<short>(&rm->spr_selectfield, 120, 240, "Multipler", 400, 150);
+    miGreedModeMultiplier = new MI_SelectField<short>(&rm->spr_selectfield, 120, 240, "Multipler", 400, 160);
     miGreedModeMultiplier->add("0.5", 1, false);
     miGreedModeMultiplier->add("1", 2);
     miGreedModeMultiplier->add("1.5", 3);
@@ -1008,7 +1008,7 @@ UI_ModeOptionsMenu::UI_ModeOptionsMenu()
     miGreedModeMultiplier->setOutputPtr(&game_values.gamemodemenusettings.greed.multiplier);
     miGreedModeMultiplier->setCurrentValue(game_values.gamemodemenusettings.greed.multiplier);
 
-    miGreedModePercentExtraCoin = new MI_SliderField(&rm->spr_selectfield, &rm->menu_slider_bar, 120, 280, "Extra Coins", 400, 150, 384);
+    miGreedModePercentExtraCoin = new MI_SliderField(&rm->spr_selectfield, &rm->menu_slider_bar, 120, 280, "Extra Coins", 400, 160, 384);
     miGreedModePercentExtraCoin->add("0", 0, false);
     miGreedModePercentExtraCoin->add("5", 5, false);
     miGreedModePercentExtraCoin->add("10", 10);
@@ -1034,7 +1034,7 @@ UI_ModeOptionsMenu::UI_ModeOptionsMenu()
     miGreedModePercentExtraCoin->setCurrentValue(game_values.gamemodemenusettings.greed.percentextracoin);
     miGreedModePercentExtraCoin->allowWrap(false);
 
-    miGreedModeBackButton = new MI_Button(&rm->spr_selectfield, 544, 432, "Back", 80, TextAlign::CENTER);
+    miGreedModeBackButton = new MI_Button(&rm->spr_selectfield, 524, 432, "Back", 100, TextAlign::CENTER);
     miGreedModeBackButton->SetCode(MENU_CODE_BACK_TO_GAME_SETUP_MENU_FROM_MODE_SETTINGS);
 
     miGreedModeLeftHeaderBar = new MI_Image(&rm->menu_plain_field, 0, 0, 0, 0, 320, 32, 1, 1, 0);
@@ -1059,7 +1059,7 @@ UI_ModeOptionsMenu::UI_ModeOptionsMenu()
     //***********************
     // Health Mode Settings
     //***********************
-    miHealthModeStartLife = new MI_SelectField<short>(&rm->spr_selectfield, 120, 180, "Start Life", 400, 150);
+    miHealthModeStartLife = new MI_SelectField<short>(&rm->spr_selectfield, 120, 180, "Start Life", 400, 160);
     miHealthModeStartLife->add("2", 2, false);
     miHealthModeStartLife->add("3", 3, false);
     miHealthModeStartLife->add("4", 4);
@@ -1074,7 +1074,7 @@ UI_ModeOptionsMenu::UI_ModeOptionsMenu()
     miHealthModeStartLife->allowWrap(false);
     miHealthModeStartLife->setItemChangedCode(MENU_CODE_HEALTH_MODE_START_LIFE_CHANGED);
 
-    miHealthModeMaxLife = new MI_SelectField<short>(&rm->spr_selectfield, 120, 220, "Max Life", 400, 150);
+    miHealthModeMaxLife = new MI_SelectField<short>(&rm->spr_selectfield, 120, 220, "Max Life", 400, 160);
     miHealthModeMaxLife->add("2", 2, false);
     miHealthModeMaxLife->add("3", 3, false);
     miHealthModeMaxLife->add("4", 4, false);
@@ -1089,7 +1089,7 @@ UI_ModeOptionsMenu::UI_ModeOptionsMenu()
     miHealthModeMaxLife->allowWrap(false);
     miHealthModeMaxLife->setItemChangedCode(MENU_CODE_HEALTH_MODE_MAX_LIFE_CHANGED);
 
-    miHealthModePercentExtraLife = new MI_SliderField(&rm->spr_selectfield, &rm->menu_slider_bar, 120, 260, "Extra Life", 400, 150, 384);
+    miHealthModePercentExtraLife = new MI_SliderField(&rm->spr_selectfield, &rm->menu_slider_bar, 120, 260, "Extra Life", 400, 160, 384);
     miHealthModePercentExtraLife->add("0", 0, false);
     miHealthModePercentExtraLife->add("5", 5, false);
     miHealthModePercentExtraLife->add("10", 10);
@@ -1115,7 +1115,7 @@ UI_ModeOptionsMenu::UI_ModeOptionsMenu()
     miHealthModePercentExtraLife->setCurrentValue(game_values.gamemodemenusettings.health.percentextralife);
     miHealthModePercentExtraLife->allowWrap(false);
 
-    miHealthModeBackButton = new MI_Button(&rm->spr_selectfield, 544, 432, "Back", 80, TextAlign::CENTER);
+    miHealthModeBackButton = new MI_Button(&rm->spr_selectfield, 524, 432, "Back", 100, TextAlign::CENTER);
     miHealthModeBackButton->SetCode(MENU_CODE_BACK_TO_GAME_SETUP_MENU_FROM_MODE_SETTINGS);
 
     miHealthModeLeftHeaderBar = new MI_Image(&rm->menu_plain_field, 0, 0, 0, 0, 320, 32, 1, 1, 0);
@@ -1202,7 +1202,7 @@ UI_ModeOptionsMenu::UI_ModeOptionsMenu()
     miCollectionModeCardLifeField->setOutputPtr(&game_values.gamemodemenusettings.collection.cardlife);
     miCollectionModeCardLifeField->setCurrentValue(game_values.gamemodemenusettings.collection.cardlife);
 
-    miCollectionModeBackButton = new MI_Button(&rm->spr_selectfield, 544, 432, "Back", 80, TextAlign::CENTER);
+    miCollectionModeBackButton = new MI_Button(&rm->spr_selectfield, 524, 432, "Back", 100, TextAlign::CENTER);
     miCollectionModeBackButton->SetCode(MENU_CODE_BACK_TO_GAME_SETUP_MENU_FROM_MODE_SETTINGS);
 
     miCollectionModeLeftHeaderBar = new MI_Image(&rm->menu_plain_field, 0, 0, 0, 0, 320, 32, 1, 1, 0);
@@ -1250,7 +1250,7 @@ UI_ModeOptionsMenu::UI_ModeOptionsMenu()
         miChaseModeQuantitySlider[iPhanto]->setCurrentValue(game_values.gamemodemenusettings.chase.phantoquantity[iPhanto]);
     }
 
-    miChaseModeBackButton = new MI_Button(&rm->spr_selectfield, 544, 432, "Back", 80, TextAlign::CENTER);
+    miChaseModeBackButton = new MI_Button(&rm->spr_selectfield, 524, 432, "Back", 100, TextAlign::CENTER);
     miChaseModeBackButton->SetCode(MENU_CODE_BACK_TO_GAME_SETUP_MENU_FROM_MODE_SETTINGS);
 
     miChaseModeLeftHeaderBar = new MI_Image(&rm->menu_plain_field, 0, 0, 0, 0, 320, 32, 1, 1, 0);
@@ -1306,7 +1306,7 @@ UI_ModeOptionsMenu::UI_ModeOptionsMenu()
     miShyGuyTagModeFreeTimeField->setOutputPtr(&game_values.gamemodemenusettings.shyguytag.freetime);
     miShyGuyTagModeFreeTimeField->setCurrentValue(game_values.gamemodemenusettings.shyguytag.freetime);
 
-    miShyGuyTagModeBackButton = new MI_Button(&rm->spr_selectfield, 544, 432, "Back", 80, TextAlign::CENTER);
+    miShyGuyTagModeBackButton = new MI_Button(&rm->spr_selectfield, 524, 432, "Back", 100, TextAlign::CENTER);
     miShyGuyTagModeBackButton->SetCode(MENU_CODE_BACK_TO_GAME_SETUP_MENU_FROM_MODE_SETTINGS);
 
     miShyGuyTagModeLeftHeaderBar = new MI_Image(&rm->menu_plain_field, 0, 0, 0, 0, 320, 32, 1, 1, 0);
@@ -1370,7 +1370,7 @@ UI_ModeOptionsMenu::UI_ModeOptionsMenu()
     miBossModeHitPointsField->setOutputPtr(&game_values.gamemodemenusettings.boss.hitpoints);
     miBossModeHitPointsField->setCurrentValue(game_values.gamemodemenusettings.boss.hitpoints);
 
-    miBossModeBackButton = new MI_Button(&rm->spr_selectfield, 544, 432, "Back", 80, TextAlign::CENTER);
+    miBossModeBackButton = new MI_Button(&rm->spr_selectfield, 524, 432, "Back", 100, TextAlign::CENTER);
     miBossModeBackButton->SetCode(MENU_CODE_BACK_TO_GAME_SETUP_MENU_FROM_MODE_SETTINGS);
 
     miBossModeLeftHeaderBar = new MI_Image(&rm->menu_plain_field, 0, 0, 0, 0, 320, 32, 1, 1, 0);

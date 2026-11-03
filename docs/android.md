@@ -53,6 +53,13 @@ Tests: `android/test-touch.sh` (assignment rules) and `tests/common/test_input_p
 Built-in controls are recognised by Android reporting them as an internal device. If a
 handheld reports its built-in pad as external, it is simply treated like a Bluetooth pad.
 
+## Menus
+
+Options -> Graphics -> **Menu Dimming** darkens the curtain backdrop behind the menus
+(Off to 50%, default 30%) so the text is easier to read; the menu items themselves and
+the world map are not dimmed. Menu fields and buttons are sized so every label clears
+the pipes' rounded ends.
+
 ## CRT filter
 
 Options -> Graphics -> **CRT Filter** draws the game through a RetroArch CRT shader:

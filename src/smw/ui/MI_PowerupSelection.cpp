@@ -130,11 +130,12 @@ MI_PowerupSelection::MI_PowerupSelection(short x, short y, short width, short nu
     miClearButton->SetCode(MENU_CODE_CLEAR_POWERUP_WEIGHTS);
 
     //Are You Sure dialog box
-    miDialogImage = new MI_Image(&rm->spr_dialog, 224, 176, 0, 0, 192, 128, 1, 1, 0);
+    miDialogImage = new MI_Image(&rm->spr_dialog, 200, 176, 0, 0, 192, 128, 1, 1, 0);
+    miDialogImage->SetDrawWidth(240);  // room for 100-wide Yes / No buttons
     miDialogAreYouText = new MI_HeaderText("Are You", 320, 195);
     miDialogSureText = new MI_HeaderText("Sure?", 320, 220);
-    miDialogYesButton = new MI_Button(&rm->spr_selectfield, 235, 250, "Yes", 80, TextAlign::CENTER);
-    miDialogNoButton = new MI_Button(&rm->spr_selectfield, 325, 250, "No", 80, TextAlign::CENTER);
+    miDialogYesButton = new MI_Button(&rm->spr_selectfield, 215, 250, "Yes", 100, TextAlign::CENTER);
+    miDialogNoButton = new MI_Button(&rm->spr_selectfield, 325, 250, "No", 100, TextAlign::CENTER);
 
     miDialogYesButton->SetCode(MENU_CODE_POWERUP_RESET_YES);
     miDialogNoButton->SetCode(MENU_CODE_POWERUP_RESET_NO);

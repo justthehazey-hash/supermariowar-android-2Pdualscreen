@@ -49,6 +49,12 @@ public:
         iBlinkInterval = interval;
     }
 
+    // Draw a plain panel (such as a dialog box) this many pixels wide instead
+    // of its source width: both edges as they are, the middle repeated.
+    void SetDrawWidth(short width) {
+        iDrawWidth = width;
+    }
+
     bool IsSwirling() const {
         return fSwirl;
     }
@@ -69,6 +75,7 @@ private:
     short isrcy = 0;
     short iw = 0;
     short ih = 0;
+    short iDrawWidth = 0;
     short iSpeed = 0;
     short iTimer = 0;
     short iXFrame = 0;

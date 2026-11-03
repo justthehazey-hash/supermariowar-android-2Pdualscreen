@@ -28,11 +28,11 @@ MI_TourStop::MI_TourStop(short x, short y, bool fWorld)
     , fIsWorld(fWorld)
 {
     if (fIsWorld) {
-        miModeField = std::make_unique<MI_ImageSelectField>(&rm->spr_selectfielddisabled, &rm->menu_mode_small, 70, 85, "Mode", 305, 90, 16, 16);
-        miGoalField = std::make_unique<MI_SelectField<short>>(&rm->spr_selectfielddisabled, 380, 85, "Goal", 190, 90);
-        miPointsField = std::make_unique<MI_SelectField<short>>(&rm->spr_selectfielddisabled, 380, 125, "Score", 190, 90);
+        miModeField = std::make_unique<MI_ImageSelectField>(&rm->spr_selectfielddisabled, &rm->menu_mode_small, 70, 85, "Mode", 305, 92, 16, 16);
+        miGoalField = std::make_unique<MI_SelectField<short>>(&rm->spr_selectfielddisabled, 380, 85, "Goal", 190, 92);
+        miPointsField = std::make_unique<MI_SelectField<short>>(&rm->spr_selectfielddisabled, 380, 125, "Score", 190, 92);
 
-        miBonusField = std::make_unique<MI_SelectField<short>>(&rm->spr_selectfielddisabled, 70, 125, "Bonus", 305, 90);
+        miBonusField = std::make_unique<MI_SelectField<short>>(&rm->spr_selectfielddisabled, 70, 125, "Bonus", 305, 92);
         miBonusField->Disable(true);
 
         miEndStageImage[0] = std::make_unique<MI_Image>(&rm->spr_worlditemsplace, 54, 201, 0, 20, 80, 248, 1, 1, 0);
@@ -42,8 +42,8 @@ MI_TourStop::MI_TourStop(short x, short y, bool fWorld)
         miEndStageImage[1]->setVisible(false);
 
         for (short iBonus = 0; iBonus < 10; iBonus++) {
-            miBonusIcon[iBonus] = std::make_unique<MI_Image>(&rm->spr_worlditemssmall, 170 + iBonus * 20, 133, 0, 0, 16, 16, 1, 1, 0);
-            miBonusBackground[iBonus] = std::make_unique<MI_Image>(&rm->spr_worlditemsplace, 168 + iBonus * 20, 131, 0, 0, 20, 20, 1, 1, 0);
+            miBonusIcon[iBonus] = std::make_unique<MI_Image>(&rm->spr_worlditemssmall, 172 + iBonus * 20, 133, 0, 0, 16, 16, 1, 1, 0);
+            miBonusBackground[iBonus] = std::make_unique<MI_Image>(&rm->spr_worlditemsplace, 170 + iBonus * 20, 131, 0, 0, 20, 20, 1, 1, 0);
 
             miBonusIcon[iBonus]->setVisible(false);
             miBonusBackground[iBonus]->setVisible(false);

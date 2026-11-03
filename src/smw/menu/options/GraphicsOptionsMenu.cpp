@@ -19,14 +19,14 @@ extern GraphicsList* gamegraphicspacklist;
 UI_GraphicsOptionsMenu::UI_GraphicsOptionsMenu()
     : UI_Menu()
 {
-    miTopLayerField = new MI_SelectField<bool>(&rm->spr_selectfield, 70, 120, "Draw Top Layer", 500, 220);
+    miTopLayerField = new MI_SelectField<bool>(&rm->spr_selectfield, 70, 80, "Draw Top Layer", 500, 220);
     miTopLayerField->add("Background", false);
     miTopLayerField->add("Foreground", true);
     miTopLayerField->setOutputPtr(&game_values.toplayer);
     miTopLayerField->setCurrentValue(game_values.toplayer ? 1 : 0);
     miTopLayerField->setAutoAdvance(true);
 
-    miFrameLimiterField = new MI_SelectField<short>(&rm->spr_selectfield, 70, 160, "Frame Limit", 500, 220);
+    miFrameLimiterField = new MI_SelectField<short>(&rm->spr_selectfield, 70, 120, "Frame Limit", 500, 220);
     miFrameLimiterField->add("10 FPS", 100);
     miFrameLimiterField->add("15 FPS", 67);
     miFrameLimiterField->add("20 FPS", 50);
@@ -56,7 +56,7 @@ UI_GraphicsOptionsMenu::UI_GraphicsOptionsMenu()
     miFrameLimiterField->setOutputPtr(&game_values.framelimiter);
     miFrameLimiterField->setCurrentValue(game_values.framelimiter);
 
-    miFullscreenField = new MI_SelectField<bool>(&rm->spr_selectfield, 70, 200, "Screen Size", 500, 220);
+    miFullscreenField = new MI_SelectField<bool>(&rm->spr_selectfield, 70, 160, "Screen Size", 500, 220);
     miFullscreenField->add("Windowed", false);
     miFullscreenField->add("Fullscreen", true);
     miFullscreenField->setOutputPtr(&game_values.fullscreen);
@@ -80,11 +80,21 @@ UI_GraphicsOptionsMenu::UI_GraphicsOptionsMenu()
     miCrtResolutionField->setCurrentValue(game_values.crtresolution);
     miCrtResolutionField->setItemChangedCode(MENU_CODE_VIDEO_FILTER_CHANGED);
 
-    miMenuGraphicsPackField = new MI_PacksField(&rm->spr_selectfield, 70, 240, "Menu Graphics", 500, 220, menugraphicspacklist, MENU_CODE_MENU_GRAPHICS_PACK_CHANGED);
+    miMenuGraphicsPackField = new MI_PacksField(&rm->spr_selectfield, 70, 200, "Menu Graphics", 500, 220, menugraphicspacklist, MENU_CODE_MENU_GRAPHICS_PACK_CHANGED);
+    miMenuDimField = new MI_SelectField<short>(&rm->spr_selectfield, 70, 240, "Menu Dimming", 500, 220);
+    miMenuDimField->add("Off", 0);
+    miMenuDimField->add("10%", 10);
+    miMenuDimField->add("20%", 20);
+    miMenuDimField->add("30%", 30);
+    miMenuDimField->add("40%", 40);
+    miMenuDimField->add("50%", 50);
+    miMenuDimField->setOutputPtr(&game_values.menudim);
+    miMenuDimField->setCurrentValue(game_values.menudim);
+
     miWorldGraphicsPackField = new MI_PacksField(&rm->spr_selectfield, 70, 280, "World Graphics", 500, 220, worldgraphicspacklist, MENU_CODE_WORLD_GRAPHICS_PACK_CHANGED);
     miGameGraphicsPackField = new MI_PacksField(&rm->spr_selectfield, 70, 320, "Game Graphics", 500, 220, gamegraphicspacklist, MENU_CODE_GAME_GRAPHICS_PACK_CHANGED);
 
-    miGraphicsOptionsMenuBackButton = new MI_Button(&rm->spr_selectfield, 544, 432, "Back", 80, TextAlign::CENTER);
+    miGraphicsOptionsMenuBackButton = new MI_Button(&rm->spr_selectfield, 524, 432, "Back", 100, TextAlign::CENTER);
     miGraphicsOptionsMenuBackButton->SetCode(MENU_CODE_BACK_TO_OPTIONS_MENU);
 
     miGraphicsOptionsMenuLeftHeaderBar = new MI_Image(&rm->menu_plain_field, 0, 0, 0, 0, 320, 32, 1, 1, 0);
@@ -95,9 +105,10 @@ UI_GraphicsOptionsMenu::UI_GraphicsOptionsMenu()
 
     AddControl(miFrameLimiterField, miTopLayerField, miFullscreenField, NULL, miGraphicsOptionsMenuBackButton);
     AddControl(miFullscreenField, miFrameLimiterField, miMenuGraphicsPackField, NULL, miGraphicsOptionsMenuBackButton);
-    AddControl(miMenuGraphicsPackField, miFullscreenField, miWorldGraphicsPackField, NULL, miGraphicsOptionsMenuBackButton);
+    AddControl(miMenuGraphicsPackField, miFullscreenField, miMenuDimField, NULL, miGraphicsOptionsMenuBackButton);
+    AddControl(miMenuDimField, miMenuGraphicsPackField, miWorldGraphicsPackField, NULL, miGraphicsOptionsMenuBackButton);
 
-    AddControl(miWorldGraphicsPackField, miMenuGraphicsPackField, miGameGraphicsPackField, NULL, miGraphicsOptionsMenuBackButton);
+    AddControl(miWorldGraphicsPackField, miMenuDimField, miGameGraphicsPackField, NULL, miGraphicsOptionsMenuBackButton);
     AddControl(miGameGraphicsPackField, miWorldGraphicsPackField, miCrtFilterField, NULL, miGraphicsOptionsMenuBackButton);
     AddControl(miCrtFilterField, miGameGraphicsPackField, miCrtResolutionField, NULL, miGraphicsOptionsMenuBackButton);
     AddControl(miCrtResolutionField, miCrtFilterField, miGraphicsOptionsMenuBackButton, NULL, miGraphicsOptionsMenuBackButton);

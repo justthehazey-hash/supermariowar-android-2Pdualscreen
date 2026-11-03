@@ -459,6 +459,7 @@ template<> struct NamedLayout<CGameConfig> {
             field("frame_limiter", &CGameConfig::framelimiter),
             field("crt_filter", &CGameConfig::videofilter),
             field("crt_scanlines", &CGameConfig::crtresolution),
+            field("menu_dim", &CGameConfig::menudim),
             field("fullscreen", &CGameConfig::fullscreen),
             field("menu_pack", &Bridge::menugraphicspack),
             field("world_pack", &Bridge::worldgraphicspack),

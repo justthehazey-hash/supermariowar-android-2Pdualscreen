@@ -114,6 +114,7 @@ public:
     bool		deadteamnotice;
     short		framelimiter;
     short		videofilter;    // CRT filter: 0 = off, 1 = crt-lottes, 2 = crt-easymode, 3 = crt-easymode-halation
+    short		menudim;        // extra darkening of the menu background, in percent (0 = off)
     short		crtresolution;  // CRT scanlines: 0 = 240 (the art's native line count), 1 = 480
     short		hiddenblockrespawn;
     CInputPlayerControl inputConfiguration[4][2]; //[NumPlayers][Keyboard/Joystick]

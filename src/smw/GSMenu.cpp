@@ -1,5 +1,7 @@
 #include "GSMenu.h"
 
+#include <algorithm>
+
 #include "FileList.h"
 #include "Game.h"
 #include "GameValues.h"
@@ -1251,9 +1253,14 @@ void MenuState::update()
     //--------------- draw everything ----------------------
 
     //Don't draw backdrop for world
-    if (mCurrentMenu != mWorldMenu.get())
+    if (mCurrentMenu != mWorldMenu.get()) {
         rm->menu_backdrop.draw(0, 0);
-    else
+        //Optional extra darkening behind the menu items (Graphics -> Menu Dimming)
+        if (game_values.menudim > 0) {
+            rm->menu_shade.setalpha((Uint8)(std::min<short>(game_values.menudim, 90) * 255 / 100));
+            rm->menu_shade.draw(0, 0);
+        }
+    } else
         SDL_FillSurfaceRect(screen, NULL, SDL_MapSurfaceRGB(screen, 0, 0, 0));
 
     mCurrentMenu->Update();

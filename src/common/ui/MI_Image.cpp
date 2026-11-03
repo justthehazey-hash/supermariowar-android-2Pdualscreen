@@ -1,5 +1,7 @@
 #include "MI_Image.h"
 
+#include <algorithm>
+
 #include "gfx.h"
 
 #include <cmath>
@@ -101,6 +103,15 @@ void MI_Image::Draw()
             ih + (iPulseValue << 1),
         };
         spr->drawStretch(srcRect, blitdest, dstRect);
+    } else if (iDrawWidth > iw) {
+        const short x = m_pos.x + iXOffset, y = m_pos.y + iYOffset;
+        const short edge = iw / 4;  // left and right quarter keep the borders
+        spr->draw(x, y, {iXFrame, iYFrame, edge, ih});
+        for (short dx = edge; dx < iDrawWidth - edge; dx += iw - 2 * edge) {
+            const short w = std::min<short>(iw - 2 * edge, iDrawWidth - edge - dx);
+            spr->draw(x + dx, y, {iXFrame + edge, iYFrame, w, ih});
+        }
+        spr->draw(x + iDrawWidth - edge, y, {iXFrame + iw - edge, iYFrame, edge, ih});
     } else {
         spr->draw(m_pos.x + iXOffset, m_pos.y + iYOffset, srcRect);
     }

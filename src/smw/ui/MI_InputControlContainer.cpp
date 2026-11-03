@@ -387,7 +387,7 @@ MI_InputControlContainer::MI_InputControlContainer(gfxSprite * spr_button, short
         miMenuInputControlFields[iKey]->SetKey(&game_values.playerInput.inputControls[iPlayerID]->inputGameControls[1].keys[iKey]);
     }
 
-    miBackButton = new MI_Button(&rm->spr_selectfield, 544, 432, "Back", 80, TextAlign::CENTER);
+    miBackButton = new MI_Button(&rm->spr_selectfield, 524, 432, "Back", 100, TextAlign::CENTER);
     miBackButton->SetCode(MENU_CODE_BACK_TO_CONTROLS_MENU);
 
     mInputMenu = new UI_Menu();
