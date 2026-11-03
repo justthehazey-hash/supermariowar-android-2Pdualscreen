@@ -1,0 +1,27 @@
+name: Remove old symbol pre-releases
+# One-off cleanup: earlier builds published their debug symbols as "symbols-<commit>"
+# pre-releases. Builds now keep them as build files and releases include them, so
+# this deletes those pre-releases (and their tags). Run it after publishing a
+# release from one of those builds, since "Publish release" picks its symbols up there.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Delete symbols-* pre-releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          gh release list --limit 200 --json tagName,isPrerelease \
+            --jq '.[] | select(.isPrerelease and (.tagName | startswith("symbols-"))) | .tagName' > tags.txt
+          echo "Deleting $(wc -l < tags.txt) pre-release(s)"
+          while read -r tag; do
+            gh release delete "$tag" --yes --cleanup-tag && echo "deleted $tag"
+          done < tags.txt
